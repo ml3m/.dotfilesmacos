@@ -125,7 +125,8 @@ alias cdd="cd ~/Downloads/"
 alias c="cd .."
 
 #-----------------------files------------------------
-alias a="ls -a"
+#alias a="ls -a"
+alias a="lsd -a"
 alias cat="bat"
 
 #---------------------terminal-----------------------
