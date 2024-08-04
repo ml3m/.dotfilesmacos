@@ -126,7 +126,7 @@ alias c="cd .."
 
 #-----------------------files------------------------
 #alias a="ls -a"
-alias a="lsd -a"
+alias a="ls -a"
 alias cat="bat"
 
 #---------------------terminal-----------------------

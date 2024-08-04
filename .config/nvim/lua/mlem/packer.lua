@@ -58,5 +58,4 @@ return require('packer').startup(function(use)
   use 'lervag/vimtex'
   use "nvim-lua/plenary.nvim"
 
-
 end)
