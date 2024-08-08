@@ -8,7 +8,11 @@ export ZSH="$HOME/.oh-my-zsh"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
+#
 ZSH_THEME="robbyrussell"
+# tryin something new
+# ZSH_THEME="jnrowe"
+
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -135,6 +139,10 @@ alias e="exit"
 #-----------------------VIM--------------------------
 alias oldvim="\vim"
 alias vim="nvim"
+
+
+#-----------------------ICloud--------------------------
+alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
