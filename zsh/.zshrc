@@ -110,7 +110,7 @@ source $ZSH/oh-my-zsh.sh
 PATH="$PATH":"$HOME/.local/bin/"
 set PATH "$PATH":"$HOME/.local/bin/"
 
-bindkey -s ^f "/Users/mlem/.config/script/tmux-sessionizer\n"
+bindkey -s ^f ".local/tmux-sessionizer\n"
 bindkey '^ ' autosuggest-accept
 
 # others
