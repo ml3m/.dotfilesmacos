@@ -146,6 +146,7 @@ alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 #----------------------- Obsidian --------------------------
 alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
+alias on="~/.local/on"
 
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
