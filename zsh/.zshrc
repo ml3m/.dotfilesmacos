@@ -127,6 +127,7 @@ alias gaa="sudo git add ."
 #-----------------Current Dir-------------------------
 alias cdd="cd ~/Downloads/"
 alias c="cd .."
+alias dot="~/.dotfilesmacos/"
 
 #-----------------------files------------------------
 #alias a="ls -a"
@@ -140,9 +141,11 @@ alias e="exit"
 alias oldvim="\vim"
 alias vim="nvim"
 
-
 #-----------------------ICloud--------------------------
 alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
+
+#----------------------- Obsidian --------------------------
+alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main"
 
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
