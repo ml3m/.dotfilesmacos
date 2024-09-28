@@ -6,7 +6,7 @@ This repository contains my personal dotfiles configuration, including settings 
 ### Overview
 This chapter explains how to manage your dotfiles efficiently using GNU Stow. GNU Stow is a symlink farm manager that helps you manage the installation of your dotfiles and other configuration files in a way that is easy to maintain and deploy across different environments. By using Stow with your .dotfiles directory, you can simplify the process of setting up your configurations on a new machine or maintaining them over time.
 
-## rerequisites
+## requisities
 Before you begin, ensure you have the following:
 
 ## GNU Stow Installed: You can install Stow using a package manager. For macOS, you can use Homebrew:
