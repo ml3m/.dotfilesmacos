@@ -110,7 +110,7 @@ source $ZSH/oh-my-zsh.sh
 PATH="$PATH":"$HOME/.local/bin/"
 set PATH "$PATH":"$HOME/.local/bin/"
 
-bindkey -s ^f ".local/tmux-sessionizer\n"
+bindkey -s ^f "~/.local/tmux-sessionizer\n"
 bindkey '^ ' autosuggest-accept
 
 # others
@@ -145,7 +145,7 @@ alias vim="nvim"
 alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 #----------------------- Obsidian --------------------------
-alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main"
+alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
 
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
