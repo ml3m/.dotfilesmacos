@@ -107,10 +107,9 @@ source $ZSH/oh-my-zsh.sh
 #
 ##------------------CUSTOM CC--------------------------
 
-PATH="$PATH":"$HOME/.local/bin/"
-set PATH "$PATH":"$HOME/.local/bin/"
+export PATH="$HOME/bin:$PATH"
 
-bindkey -s ^f "~/.local/tmux-sessionizer\n"
+bindkey -s ^f "tmux-sessionizer\n"
 bindkey '^ ' autosuggest-accept
 
 # others
@@ -146,7 +145,5 @@ alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 #----------------------- Obsidian --------------------------
 alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
-alias on="~/.local/on"
-
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
