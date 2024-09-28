@@ -1,49 +1,150 @@
-# .dotfilesmacos
+# Dotfiles
 
-This repository contains configuration files for macOS, including settings for various applications and shell environments.
+This repository contains my personal dotfiles configuration, including settings and configurations for various applications and tools I use daily. Below is a detailed explanation of the Neovim configuration and its functionalities.
 
-## Contents
+# Using Stow for Dotfile Management
+### Overview
+This chapter explains how to manage your dotfiles efficiently using GNU Stow. GNU Stow is a symlink farm manager that helps you manage the installation of your dotfiles and other configuration files in a way that is easy to maintain and deploy across different environments. By using Stow with your .dotfiles directory, you can simplify the process of setting up your configurations on a new machine or maintaining them over time.
 
-- **config/**: Directory for application-specific configurations
-- **git/**: Git configuration files
-- **tmux/**: tmux configuration files
-- **zsh/**: Zsh configuration files
+## rerequisites
+Before you begin, ensure you have the following:
 
-## Setup
+## GNU Stow Installed: You can install Stow using a package manager. For macOS, you can use Homebrew:
 
-To set up these dotfiles on your macOS system using GNU Stow, follow these steps:
+```bash
+brew install stow
+```
 
-1. Clone this repository to your home directory:
-    ```sh
-    git clone https://github.com/ml3m/.dotfilesmacos.git ~/.dotfilesmacos
-    ```
+## .dotfilesmacos tree
 
-2. Navigate to the cloned directory:
-    ```sh
-    cd ~/.dotfilesmacos
-    ```
+```javascript
+.dotfilesmacos
+├── README.md
+├── bpytop
+├── kitty
+├── lsd
+├── nvim
+├── scripts
+│   └── bin
+│       ├── og
+│       ├── on
+│       └── tmux-sessionizer
+├── tmux
+└── zsh
+```
+## Organizing Your Dotfiles
+Using **GNU Stow** to Symlink Your Dotfiles
+Navigate to Your .dotfiles Directory:
 
-3. Use Stow to create symlinks for each set of dotfiles:
-    ```sh
-    stow config
-    stow git
-    stow tmux
-    stow zsh
-    ```
+```bash
+cd ~/.dotfiles
+```
+Stow a Configuration: To create symlinks for a specific configuration, use the following command:
 
-## Customization
+```bash
+stow <directory-name>
+```
+Replace <directory-name> with the name of the directory containing the dotfiles you want to symlink. For example, to symlink your Neovim configuration:
 
-Feel free to customize these files according to your needs. Below is a brief overview of what each directory contains:
+```bash
+stow nvim
+```
+Verifying the Symlinks: After running the Stow command, check your home directory to ensure that the symlinks have been created correctly. For example:
 
-- **config/**: Application-specific configurations.
-- **git/**: Configurations for Git, including user details and aliases.
-- **tmux/**: Customizations for the tmux terminal multiplexer.
-- **zsh/**: Zsh shell settings, including aliases, functions, and environment variables.
+```bash
+ls -la ~ | grep nvim
+```
+Unstowing Configuration: If you ever need to remove the symlinks for a specific configuration, you can use the -D option:
 
-## Contributing
+```bash
+stow -D <directory-name>
+```
+This will remove all symlinks associated with the specified directory.
 
-Contributions are welcome! If you have any improvements or suggestions, please open an issue or submit a pull request.
 
-## License
+## Neovim Configuration
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+The Neovim configuration resides in the `nvim` directory. This includes various Lua scripts and configuration files to enhance the Neovim experience.
+
+### Key Components
+
+
+1. **lua/mlem/packer.lua**
+   - Handles the setup of **Packer**, a package manager for Neovim. This file defines the plugins used in the setup, ensuring they are installed and loaded correctly.
+
+2. **lua/mlem/remap.lua**
+   - Contains key mappings to enhance productivity and streamline workflow. Custom keybindings for frequently used commands or plugins are set here.
+
+3. **lua/mlem/set.lua**
+   - Configures general settings for Neovim, such as line numbers, tab behavior, and other editor options.
+
+4. **lua/mlem/trouble.lua**
+   - Sets up the **Trouble** plugin, which provides a better way to manage diagnostics and issues in the code. It allows for easier navigation through errors and warnings.
+
+### After Plugin Configuration
+
+- **after/plugin/**:
+  - Contains specific Lua files for plugin configuration that should be executed after the plugins are loaded. Each file corresponds to a plugin with custom settings.
+
+  - **autoclose.lua**: Automatically closes matching brackets, quotes, and other characters for better coding efficiency.
+  
+  - **colors.lua**: Sets the color scheme and visual appearance of the editor.
+
+  - **fugitive.lua**: Configures the **fugitive** plugin for Git integration, providing commands to manage Git repositories directly within Neovim.
+
+  - **harpoon.lua**: Sets up **Harpoon**, a plugin for quick file navigation. It allows marking files and switching between them easily.
+  - //The gratest plugin alive by ThePrimeAgen
+
+  - **lsp.lua**: Configures the Language Server Protocol (LSP) settings for code completion, linting, and other language-specific features.
+
+  - **obsidian.lua**: Configures the **Obsidian** plugin for enhanced note-taking and linking features, ideal for personal knowledge management.
+
+  - **telescope.lua**: Sets up the **Telescope** plugin for fuzzy finding files, buffers, and more within the Neovim interface.
+
+  - **treesitter.lua**: Configures **Tree-sitter** for improved syntax highlighting and code understanding.
+
+  - **trouble.lua**: Additional configuration for the **Trouble** plugin to handle diagnostics better.
+
+  - **undotree.lua**: Sets up the **Undotree** plugin for better visualization and management of undo history.
+
+# Other Configurations
+## Scripts
+
+### tmux-sessionizer 
+- **The tmux-sessionizer script automates the process of managing tmux sessions based on directories. It provides a way to quickly create or switch to a tmux session named after the selected directory, significantly enhancing productivity, especially for developers working on multiple projects.
+
+Example Usage
+To use the script, you could run:
+
+```bash
+./tmux-sessionizer
+```
+This will prompt you to select a directory using fzf. Vim Motions are default.
+
+Alternatively, you can provide a directory as an argument:
+
+```bash
+./tmux-sessionizer ~/personal/projects/my_project
+```
+This will switch to or create a tmux session named after my_project.
+
+### on script (Obsidian Note)
+- **on*** script is designed to create a new Markdown file for note-taking or journaling purposes. It generates a file name based on the current date and a user-provided title, formats it to replace spaces with hyphens, and places it in a designated directory. It automatically opens the file in Neovim for immediate editing, streamlining the note-taking process.
+
+Example Usage
+To use the script, run the following command:
+```bash
+./your_script_name.zsh "Alice's Adventures in Wonderland"
+```
+This would create a new file named 2024-09-29_Alice's-Adventures-in-Wonderland.md in the inbox directory within the specified path and open it in Neovim.
+
+### og script (Obsidian group)
+**og** script is designed to organize Markdown files in your Obsidian vault by moving them into subdirectories based on their tags. It processes each file in the inbox directory, extracts the first tag found after the tags: line, and moves the file to a corresponding directory under notes. If no tag is found, the file remains in its original location.
+
+Example Usage
+To use the script:
+
+Place it in a suitable location, such as your scripts directory. Addable to the user path.
+
+- This will start processing all Markdown files in the specified inbox directory.
+- Make sure that your Markdown files follow the expected format for tags, with a line containing tags: followed by the tag(s) on the next line. Otherwise, the script may not work as intended.
