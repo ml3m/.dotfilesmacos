@@ -16,26 +16,17 @@ require("obsidian").setup({
       time_format = "%H:%M:%S",
   },
 
+  -- key mappings, below are the defaults
+  mappings = {
+    -- overrides the 'gf' mapping to work on markdown/wiki links within your vault
+    ["gf"] = {
+      action = function()
+        return require("obsidian").util.gf_passthrough()
+      end,
+      opts = { noremap = false, expr = true, buffer = true },
+    },
+  },
 
-
---  -- key mappings, below are the defaults
---  mappings = {
---    -- overrides the 'gf' mapping to work on markdown/wiki links within your vault
---    ["gf"] = {
---      action = function()
---        return require("obsidian").util.gf_passthrough()
---      end,
---      opts = { noremap = false, expr = true, buffer = true },
---    },
---    -- toggle check-boxes
---    -- ["<leader>ch"] = {
---    --   action = function()
---    --     return require("obsidian").util.toggle_checkbox()
---    --   end,
---    --   opts = { buffer = true },
---    -- },
---  },
---
   completion = {
     nvim_cmp = true,
     min_chars = 2,
