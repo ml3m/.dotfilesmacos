@@ -147,3 +147,4 @@ alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
