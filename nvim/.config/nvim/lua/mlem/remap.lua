@@ -15,6 +15,7 @@ vim.keymap.set("x", "<leader>p", [["_dP]])
 -- the zzz-ing is just the carot center after command
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
+-- for searching n-next / N-prev
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 
@@ -25,11 +26,12 @@ vim.keymap.set("n", "<leader>j", "<cmd>lprev<CR>zz")
 -- create exe
 vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<CR>", { silent = true })
 
--- convert note to template and remove leading white space
-vim.keymap.set("n", "<leader>on", ":ObsidianTemplate note<cr> :lua vim.cmd([[1,/^\\S/s/^\\n\\{1,}//]])<cr>")
 
 
 ---- Obsidian ----
+
+-- convert note to template and remove leading white space
+vim.keymap.set("n", "<leader>on", ":ObsidianTemplate note<cr> :lua vim.cmd([[1,/^\\S/s/^\\n\\{1,}//]])<cr>")
 
 -- search for files in full vault
 vim.keymap.set("n", "<leader>os", ":Telescope find_files search_dirs={\"/Users/mlem/Library/Mobile\\ Documents/com~apple~CloudDocs/main/notes\"}<cr>")
