@@ -1,11 +1,11 @@
 font_family UbuntuMono Nerd Font
-# background #140f08
-background_opacity 0.5
+# background #140f0
+background_opacity 0.8
 font_size 44.0
 background_blur 100
 
 
 # BEGIN_KITTY_THEME
-# Rosé Pine Moon
+# Darkside
 include current-theme.conf
 # END_KITTY_THEME

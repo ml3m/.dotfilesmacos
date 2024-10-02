@@ -140,6 +140,11 @@ alias e="exit"
 alias oldvim="\vim"
 alias vim="nvim"
 
+#-----------------------TMUX-------------------------
+alias t="tmux"
+alias tk="tmux kill-server"
+
+
 #-----------------------ICloud--------------------------
 alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
