@@ -144,7 +144,6 @@ alias vim="nvim"
 alias t="tmux"
 alias tk="tmux kill-server"
 
-
 #-----------------------ICloud--------------------------
 alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
@@ -153,3 +152,7 @@ alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
+
+# Set up Qt -> CGAL basic Viewer environment
+export PATH="/opt/homebrew/opt/qt/bin:$PATH"
+export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt"
