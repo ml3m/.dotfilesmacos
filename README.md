@@ -134,7 +134,7 @@ This will switch to or create a tmux session named after my_project.
 Example Usage
 To use the script, run the following command:
 ```bash
-./your_script_name.zsh "Alice's Adventures in Wonderland"
+on "Alice's Adventures in Wonderland"
 ```
 This would create a new file named 2024-09-29_Alice's-Adventures-in-Wonderland.md in the inbox directory within the specified path and open it in Neovim.
 
