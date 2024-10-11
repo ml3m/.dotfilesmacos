@@ -21,6 +21,9 @@ brew install stow
 .dotfilesmacos
 ├── README.md
 ├── bpytop
+├── brew_installed.text
+├── images
+│   └── template.png
 ├── kitty
 ├── lsd
 ├── nvim
