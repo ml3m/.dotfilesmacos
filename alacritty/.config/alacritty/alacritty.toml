@@ -1,0 +1,14 @@
+general.import = [
+    "~/.config/alacritty/themes/themes/rose_pine.toml"
+]
+
+[font]
+    size = 30
+
+    [font.normal]
+        family = "UbuntuMono Nerd Font"
+
+[window]
+    opacity = 0.7
+    blur = true
+    decorations = "Buttonless"

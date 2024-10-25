@@ -107,8 +107,6 @@ source $ZSH/oh-my-zsh.sh
 #
 ##------------------CUSTOM CC--------------------------
 
-export PATH="$HOME/bin:$PATH"
-
 bindkey -s ^f "tmux-sessionizer\n"
 bindkey '^ ' autosuggest-accept
 
@@ -156,3 +154,5 @@ export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 # Set up Qt -> CGAL basic Viewer environment
 export PATH="/opt/homebrew/opt/qt/bin:$PATH"
 export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt"
+export PATH="$HOME/bin:$PATH"
+. "$HOME/.cargo/env"
