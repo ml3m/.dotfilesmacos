@@ -8,6 +8,7 @@ SAVED_DIRS="$ICLOUD_BASE/saved_dirs"
 mkdir -p "$SAVED_FILES"
 mkdir -p "$SAVED_DIRS"
 
+# Check if a target path was provided
 if [ -z "$1" ]; then
   echo "Usage: $0 <file_or_directory>"
   exit 1
@@ -15,21 +16,32 @@ fi
 
 TARGET_PATH="$(realpath "$1")"
 
+# Check if the specified path exists
 if [ ! -e "$TARGET_PATH" ]; then
   echo "Error: $TARGET_PATH does not exist."
   exit 1
 fi
 
-# Determine if it's a file or a directory, and move it to iCloud
-if [ -f "$TARGET_PATH" ]; then
-  mv "$TARGET_PATH" "$SAVED_FILES"
-  ln -sf "$SAVED_FILES/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
-  echo "File moved to iCloud and symlinked back to original location."
-elif [ -d "$TARGET_PATH" ]; then
-  mv "$TARGET_PATH" "$SAVED_DIRS"
-  ln -sf "$SAVED_DIRS/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
-  echo "Directory moved to iCloud and symlinked back to original location."
+# Confirm with the user before proceeding
+echo "You are about to move '$TARGET_PATH' to iCloud and create a symlink in its original location."
+read -p "Are you sure you want to proceed? (Y/n): " CONFIRMATION
+
+# Check if input is empty (default to "yes") or starts with "y" or "Y"
+if [[ -z "$CONFIRMATION" || "$CONFIRMATION" =~ ^[Yy]$ ]]; then
+  # Determine if it's a file or a directory, and move it to iCloud
+  if [ -f "$TARGET_PATH" ]; then
+    mv "$TARGET_PATH" "$SAVED_FILES"
+    ln -sf "$SAVED_FILES/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
+    echo "File moved to iCloud and symlinked back to original location."
+  elif [ -d "$TARGET_PATH" ]; then
+    mv "$TARGET_PATH" "$SAVED_DIRS"
+    ln -sf "$SAVED_DIRS/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
+    echo "Directory moved to iCloud and symlinked back to original location."
+  else
+    echo "Error: $TARGET_PATH is neither a file nor a directory."
+    exit 1
+  fi
 else
-  echo "Error: $TARGET_PATH is neither a file nor a directory."
-  exit 1
+  echo "Operation canceled."
+  exit 0
 fi
