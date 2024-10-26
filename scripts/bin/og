@@ -30,4 +30,17 @@ find "$VAULT_DIR/$SOURCE_DIR" -type f -name "*.md" | while read -r file; do
 
 done
 
+echo "Processing git tasks"
+GIT_TARGET_DIT = "/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+
+# nav to the target dir
+cd "$GIT_TARGET_DIT" || {
+    echo "Failed to change directory to $GIT_TARGET_DIT"
+    exit 1
+}
+
+git add .
+git commit -m "notes update"
+git push
+
 echo "Done 🪷"
