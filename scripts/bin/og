@@ -5,8 +5,8 @@ VAULT_DIR="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
 SOURCE_DIR="inbox"
 DEST_DIR="notes"
 
+## find and mv ##
 
-# Iterate through all markdown files in the source directory
 find "$VAULT_DIR/$SOURCE_DIR" -type f -name "*.md" | while read -r file; do
   echo "Processing $file"
 
@@ -30,11 +30,13 @@ find "$VAULT_DIR/$SOURCE_DIR" -type f -name "*.md" | while read -r file; do
 
 done
 
-echo "Processing git tasks"
-GIT_TARGET_DIT = "/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+
+## git ##
+
+echo "Processing git tasks.."
 
 # nav to the target dir
-cd "$GIT_TARGET_DIT" || {
+cd "$VAULT_DIR" || {
     echo "Failed to change directory to $GIT_TARGET_DIT"
     exit 1
 }
