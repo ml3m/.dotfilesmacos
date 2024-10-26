@@ -1,0 +1,35 @@
+#!/bin/bash
+
+ICLOUD_BASE="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs"   # Replace with your iCloud Drive path
+SAVED_FILES="$ICLOUD_BASE/saved_files"
+SAVED_DIRS="$ICLOUD_BASE/saved_dirs"
+
+# Ensure directories exist
+mkdir -p "$SAVED_FILES"
+mkdir -p "$SAVED_DIRS"
+
+if [ -z "$1" ]; then
+  echo "Usage: $0 <file_or_directory>"
+  exit 1
+fi
+
+TARGET_PATH="$(realpath "$1")"
+
+if [ ! -e "$TARGET_PATH" ]; then
+  echo "Error: $TARGET_PATH does not exist."
+  exit 1
+fi
+
+# Determine if it's a file or a directory, and move it to iCloud
+if [ -f "$TARGET_PATH" ]; then
+  mv "$TARGET_PATH" "$SAVED_FILES"
+  ln -sf "$SAVED_FILES/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
+  echo "File moved to iCloud and symlinked back to original location."
+elif [ -d "$TARGET_PATH" ]; then
+  mv "$TARGET_PATH" "$SAVED_DIRS"
+  ln -sf "$SAVED_DIRS/$(basename "$TARGET_PATH")" "$(dirname "$TARGET_PATH")"
+  echo "Directory moved to iCloud and symlinked back to original location."
+else
+  echo "Error: $TARGET_PATH is neither a file nor a directory."
+  exit 1
+fi
