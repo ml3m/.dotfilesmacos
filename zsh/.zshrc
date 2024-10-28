@@ -117,7 +117,6 @@ alias grep='grep --color=auto'
 #------------------GIT-Aliases-------------------------
 alias gs="git status"
 alias gp="git push"
-alias gc="git commit -m"
 alias g="git"
 alias gaa="sudo git add ."
 
