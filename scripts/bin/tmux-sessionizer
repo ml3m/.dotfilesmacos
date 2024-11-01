@@ -19,7 +19,7 @@ has_session(){
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find ~/ ~/personal ~/personal/projects/ -mindepth 1 -maxdepth 1 -type d | fzf)
+    selected=$(find $(eval echo $(xargs < "$XDG_CONFIG_HOME/tmux-sessionizer/directories")) -mindepth 1 -maxdepth 1 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then

@@ -154,4 +154,6 @@ export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 export PATH="/opt/homebrew/opt/qt/bin:$PATH"
 export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt"
 export PATH="$HOME/bin:$PATH"
+export XDG_CONFIG_HOME="$HOME/.config"
+
 . "$HOME/.cargo/env"
