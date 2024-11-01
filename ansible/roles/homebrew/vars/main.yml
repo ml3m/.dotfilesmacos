@@ -1,0 +1,9 @@
+---
+homebrew_packages:
+  - wget
+  - git
+  - node
+
+homebrew_casks:
+  - alacritty
+  - iterm2

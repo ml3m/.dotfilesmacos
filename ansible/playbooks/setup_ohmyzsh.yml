@@ -1,0 +1,5 @@
+---
+- name: Set up Oh My Zsh
+  hosts: localhost
+  roles:
+    - ohmyzsh

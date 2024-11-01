@@ -1,0 +1,7 @@
+---
+zsh_plugins:
+  - git
+  - zsh-autosuggestions
+  - zsh-syntax-highlighting
+
+ohmyzsh_custom_theme: "agnoster"

@@ -1,0 +1,30 @@
+---
+# tasks that prepare the environment
+
+- name: Update macOS software (if applicable)
+  ansible.builtin.command: softwareupdate -i -a
+  when: ansible_distribution == "MacOSX"
+  tags: system_update
+
+- name: Ensure required directories are created
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - ~/.config
+    - ~/bin
+  tags: create_dirs
+
+- name: Set PATH environment variable in ~/.zshrc
+  lineinfile:
+    path: ~/.zshrc
+    line: 'export PATH="$HOME/bin:$PATH"'
+    insertafter: EOF
+  tags: env_vars
+
+- name: Update Homebrew and installed packages
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes
+  tags: homebrew_update

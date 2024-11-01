@@ -1,0 +1,30 @@
+---
+- name: Ensure Homebrew is installed
+  ansible.builtin.command: "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+  args:
+    creates: /opt/homebrew/bin/brew
+
+- name: Install Homebrew packages
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ homebrew_packages }}"
+  when: homebrew_packages is defined
+
+- name: Install Homebrew casks
+  homebrew_cask:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ homebrew_casks }}"
+  when: homebrew_casks is defined
+
+- name: Upgrade Homebrew packages
+  homebrew:
+    update_homebrew: yes
+    upgrade_all: yes
+  when: upgrade | default(false)
+
+- name: Cleanup Homebrew
+  homebrew:
+    cleanup: yes
+  when: cleanup | default(false)

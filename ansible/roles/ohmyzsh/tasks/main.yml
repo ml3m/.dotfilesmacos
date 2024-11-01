@@ -1,0 +1,22 @@
+---
+- name: Install Zsh via Homebrew
+  homebrew:
+    name: zsh
+    state: present
+
+- name: Install Oh My Zsh
+  ansible.builtin.shell: |
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+  args:
+    creates: ~/.oh-my-zsh
+
+- name: Install Oh My Zsh plugins via Homebrew
+  homebrew:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ zsh_plugins }}"
+  
+- name: Configure .zshrc with plugins and theme
+  template:
+    src: zshrc.j2
+    dest: ~/.zshrc
