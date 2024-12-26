@@ -12,15 +12,18 @@ if [ -z "$1" ]; then
     exit 1
 fi
 
+# Convert the input filename to uppercase
+UPPERCASE_NAME=$(echo "$1" | tr '[:lower:]' '[:upper:]')
+
 # Get the current date
 CURRENT_DATE=$(date +"%Y-%m-%d")
 
 # Construct the file path
-FILE_NAME="$1.md"
+FILE_NAME="$UPPERCASE_NAME.md"
 FILE_PATH="$TARGET_FOLDER/$FILE_NAME"
 
 # Create the file and write content to it
-echo "This is the hub for $1 created on: $CURRENT_DATE" > "$FILE_PATH"
+echo "This is the hub for $UPPERCASE_NAME created on: $CURRENT_DATE" > "$FILE_PATH"
 
 # Inform the user
 echo "File '$FILE_PATH' has been created with content."
