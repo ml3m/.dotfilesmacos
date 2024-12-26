@@ -79,4 +79,9 @@ return require('packer').startup(function(use)
 
     use 'echasnovski/mini.nvim'
 
+    use {'nvim-orgmode/orgmode', config = function()
+      require('orgmode').setup{}
+    end
+    }
+
 end)

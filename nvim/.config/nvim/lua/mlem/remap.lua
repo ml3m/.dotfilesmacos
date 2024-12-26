@@ -40,3 +40,14 @@ vim.keymap.set("n", "<leader>oz", ":Telescope live_grep search_dirs={\"/Users/ml
 -- strip date from note title and replace dashes with spaces
 -- must have cursor on title
 vim.keymap.set("n", "<leader>of", ":s/\\(# \\)[^_]*_/\\1/ | s/-/ /g<cr>")
+
+-- Org Mode <CR>
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'org',
+  callback = function()
+    vim.keymap.set('i', '<S-CR>', '<cmd>lua require("orgmode").action("org_mappings.meta_return")<CR>', {
+      silent = true,
+      buffer = true,
+    })
+  end,
+})

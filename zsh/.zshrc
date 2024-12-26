@@ -146,14 +146,17 @@ alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 #----------------------- Obsidian --------------------------
 alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
+# 'tmux new-session -d -s my_session "vim /path/to/your/file" && tmux attach-session -t my_session'
+alias todo='tmux new-session -d -s TODO "nvim ~/Library/Mobile\ Documents/com~apple~CloudDocs/main/TODO/todo.org" && tmux attach-session -t TODO'
 
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 
 # Set up Qt -> CGAL basic Viewer environment
-export PATH="/opt/homebrew/opt/qt/bin:$PATH"
-export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt"
+#export PATH="/opt/homebrew/opt/qt/bin:$PATH"
+#export CMAKE_PREFIX_PATH="/opt/homebrew/opt/qt"
 export PATH="$HOME/bin:$PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
 
 . "$HOME/.cargo/env"
+export PATH=$PATH:$HOME/go/bin

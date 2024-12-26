@@ -1,0 +1,26 @@
+#!/bin/zsh
+
+# Define the folder where the files will be created
+TARGET_FOLDER="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main/hubs/"
+
+# Ensure the folder exists
+mkdir -p "$TARGET_FOLDER"
+
+# Check if an argument is provided
+if [ -z "$1" ]; then
+    echo "Usage: $0 <filename>"
+    exit 1
+fi
+
+# Get the current date
+CURRENT_DATE=$(date +"%Y-%m-%d")
+
+# Construct the file path
+FILE_NAME="$1.md"
+FILE_PATH="$TARGET_FOLDER/$FILE_NAME"
+
+# Create the file and write content to it
+echo "This is the hub for $1 created on: $CURRENT_DATE" > "$FILE_PATH"
+
+# Inform the user
+echo "File '$FILE_PATH' has been created with content."
