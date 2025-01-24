@@ -1,8 +1,25 @@
-theme = rose-pine-moon
+# Ghostty Configuration
+
+# Font settings
+font-family = UbuntuMono Nerd Font Mono
+font-size = 44.0
+
+# Background settings
 background-opacity = 0.8
+
 background-blur-radius = 100
 
-font-family = "UbuntuMono Nerd Font"
+# Window decorations
+# hide_window_decorations = titlebar-only
+macos-titlebar-style = hidden
+#window-decoration = false
 
-background-color = #140f00
-font-size = 44.0
+
+selection-background = #ffffff
+
+## cursor very light purple--
+# changed it to white
+cursor-color = #a9a5c2 
+cursor-text = #e0def4
+
+theme = rose-pine-moon
