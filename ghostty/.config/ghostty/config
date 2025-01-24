@@ -11,9 +11,9 @@ background-blur-radius = 100
 
 # Window decorations
 # hide_window_decorations = titlebar-only
-macos-titlebar-style = hidden
 #window-decoration = false
-
+macos-titlebar-style = hidden
+window-save-state = always
 
 selection-background = #ffffff
 
