@@ -160,3 +160,10 @@ export XDG_CONFIG_HOME="$HOME/.config"
 
 . "$HOME/.cargo/env"
 export PATH=$PATH:$HOME/go/bin
+
+# bun completions
+[ -s "/Users/mlem/.bun/_bun" ] && source "/Users/mlem/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
