@@ -78,6 +78,8 @@ plugins=(git zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
+HISTFILE=~/.dotfilesmacos/zsh/.zsh_history
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
