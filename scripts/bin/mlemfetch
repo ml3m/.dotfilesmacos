@@ -1,0 +1,305 @@
+#!/bin/bash
+
+# Colors array
+colors=(
+  '\033[31m' # Red
+  '\033[32m' # Green
+  '\033[33m' # Yellow
+  '\033[34m' # Blue
+  '\033[35m' # Purple
+  '\033[36m' # Cyan
+  '\033[91m' # Light Red
+  '\033[92m' # Light Green
+  '\033[93m' # Light Yellow
+  '\033[94m' # Light Blue
+  '\033[95m' # Light Purple
+  '\033[96m' # Light Cyan
+)
+NC='\033[0m' # No Color
+WHITE='\033[97m' # White
+
+# Padding settings
+LEFT_PADDING=4 # Number of spaces for left padding
+TOP_PADDING=2 # Number of empty lines for top padding
+BOTTOM_PADDING=2 # Number of empty lines for bottom padding
+
+# Get System Information
+get_os() {
+  sw_vers -productName
+}
+
+get_os_version() {
+  sw_vers -productVersion
+}
+
+get_hostname() {
+  hostname
+}
+
+get_user() {
+  whoami
+}
+
+get_packages() {
+  formulas=$(brew list --formula | wc -l)
+  echo "$formulas formulas"
+}
+
+get_uptime() {
+  # Get uptime in seconds for macOS.
+  boot=$(sysctl -n kern.boottime)
+  boot=${boot/\{ sec = }
+  boot=${boot/,*}
+
+  # Get current date in seconds.
+  now=$(date +%s)
+  s=$((now - boot))
+
+  d="$((s / 60 / 60 / 24)) days"
+  h="$((s / 60 / 60 % 24)) hours"
+  m="$((s / 60 % 60)) minutes"
+
+  # Remove plural if < 2.
+  (( ${d/ *} == 1 )) && d=${d/s}
+  (( ${h/ *} == 1 )) && h=${h/s}
+  (( ${m/ *} == 1 )) && m=${m/s}
+
+  # Hide empty fields.
+  (( ${d/ *} == 0 )) && unset d
+  (( ${h/ *} == 0 )) && unset h
+  (( ${m/ *} == 0 )) && unset m
+
+  uptime="${d:+$d, }${h:+$h, }$m"
+  uptime=${uptime%', '}
+  uptime=${uptime:-"$s seconds"}
+
+  # Make the output of uptime smaller.
+  case $uptime_shorthand in
+    on)
+      uptime=${uptime/ minutes/ mins}
+      uptime=${uptime/ minute/ min}
+      uptime=${uptime/ seconds/ secs}
+      ;;
+
+    tiny)
+      uptime=${uptime/ days/d}
+      uptime=${uptime/ day/d}
+      uptime=${uptime/ hours/h}
+      uptime=${uptime/ hour/h}
+      uptime=${uptime/ minutes/m}
+      uptime=${uptime/ minute/m}
+      uptime=${uptime/ seconds/s}
+      uptime=${uptime//,}
+      ;;
+  esac
+
+  echo "$uptime"
+}
+
+get_shell() {
+  if [[ "$SHELL" == "/bin/zsh" ]]; then
+    echo "zsh"
+  else
+    echo "$SHELL"
+  fi
+}
+
+get_terminal() {
+  # Prioritize iTerm2
+  if [[ -n "$ITERM_SESSION_ID" ]]; then
+    echo "iTerm2"
+    return
+  fi
+
+  # Check for Ghostty
+  if [[ -n "$GHOSTTY_VERSION" ]]; then
+    echo "Ghostty"
+    return
+  fi
+
+  # Check if running inside tmux
+  if [[ -n "$TMUX" ]]; then
+    # If inside tmux, try to get the underlying terminal from $TERM_PROGRAM
+    if [[ -n "$TERM_PROGRAM" ]]; then
+      echo "$TERM_PROGRAM"
+      return
+    fi
+    # If $TERM_PROGRAM is not set, fallback to $TERM (might still be tmux)
+    if [[ -n "$TERM" ]]; then
+      echo "$TERM"
+      return
+    fi
+  fi
+
+  # Check for common terminal emulators (outside tmux)
+  if [[ -n "$VTE_VERSION" ]]; then
+    echo "GNOME Terminal"
+    return
+  fi
+
+  if [[ -n "$KONSOLE_VERSION" ]]; then
+    echo "Konsole"
+    return
+  fi
+
+  # Check for VS Code integrated terminal
+  if [[ -n "$VSCODE_PID" ]]; then
+    echo "VS Code"
+    return
+  fi
+
+  # Check for Hyper.js
+  if [[ -n "$TERM_PROGRAM" && "$TERM_PROGRAM" == "Hyper" ]]; then
+    echo "Hyper"
+    return
+  fi
+
+  # If TERM is screen-256color, try to infer from $TERM_PROGRAM
+  if [[ "$TERM" == "screen-256color" ]]; then
+    if [[ -n "$TERM_PROGRAM" ]]; then
+      echo "$TERM_PROGRAM"
+      return
+    fi
+  fi
+
+  # Fallback to $TERM (if it's not screen-256color or already handled)
+  if [[ -n "$TERM" ]]; then
+    echo "$TERM"
+    return
+  fi
+
+  # Last resort: use tty
+  tty | sed 's/\/dev\///'
+}
+
+get_cpu() {
+  sysctl -n machdep.cpu.brand_string
+}
+
+get_memory() {
+  total_mem=$(sysctl -n hw.memsize)
+  total_mem_gb=$((total_mem / 1024 / 1024 / 1024))
+  echo "${total_mem_gb}GB"
+}
+
+get_disk() {
+  df -h / | awk 'NR==2 {print $2}' | sed 's/GiB/GB/g'
+}
+
+# Function to colorize a string randomly
+colorize_string() {
+  local string="$1"
+  local result=""
+  local -i len=${#string}
+
+  for ((i = 0; i < len; i++)); do
+    local char="${string:$i:1}"
+    if [[ "$char" != " " ]]; then
+      local color_index=$((RANDOM % ${#colors[@]}))
+      result+="${colors[$color_index]}${char}${NC}"
+    else
+      result+="$char"
+    fi
+  done
+  echo -e "$result"
+}
+
+# Function to get the visual length of a string (excluding color codes)
+get_visual_length() {
+  local string="$1"
+  echo -n "$string" | sed 's/\x1b\[[0-9;]*m//g' | wc -c
+}
+
+# Function to print empty lines
+print_empty_lines() {
+  local count=$1
+  for ((i = 0; i < count; i++)); do
+    echo
+  done
+}
+
+# Prepare system information with different colors for each row
+hostname_text="$(get_user)@$(get_hostname)"
+hostname_line="${WHITE}${hostname_text}${NC}"
+
+# Calculate separator length based on the text content of the first line
+separator_length=${#hostname_text}
+separator=$(printf "%${separator_length}s" | tr " " "-")
+
+sys_info=(
+  "$hostname_line" # Added Host/Name in white
+  "${colors[8]}${separator}${NC}"
+  "${colors[0]}OS: $(get_os) $(get_os_version)${NC}"
+  "${colors[1]}Uptime: $(get_uptime)${NC}"
+  "${colors[2]}Shell: $(get_shell)${NC}"
+  "${colors[3]}Terminal: $(get_terminal)${NC}"
+  #"${colors[7]}Packages: $(get_packages)${NC}"
+  "${colors[4]}CPU: $(get_cpu)${NC}"
+  "${colors[5]}Memory: $(get_memory)${NC}"
+  "${colors[6]}Disk: $(get_disk)${NC}"
+)
+
+# Apple logo
+logo=(
+  "                    'c."
+  "                 ,xNMM."
+  "               .OMMMMo"
+  "               OMMM0,"
+  "     .;loddo:' loolloddol;."
+  "   cKMMMMMMMMMMNWMMMMMMMMMM0:"
+  " .KMMMMMMMMMMMMMMMMMMMMMMMWd."
+  " XMMMMMMMMMMMMMMMMMMMMMMMX."
+  ";MMMMMMMMMMMMMMMMMMMMMMMM:"
+  ":MMMMMMMMMMMMMMMMMMMMMMMM:"
+  ".MMMMMMMMMMMMMMMMMMMMMMMMX."
+  " kMMMMMMMMMMMMMMMMMMMMMMMMWd."
+  " .XMMMMMMMMMMMMMMMMMMMMMMMMMMk"
+  "  .XMMMMMMMMMMMMMMMMMMMMMMMMK."
+  "    kMMMMMMMMMMMMMMMMMMMMMMd"
+  "     ;KMMMMMMMWXXWMMMMMMMk."
+  "       .cooc,.    .,coo:."
+)
+
+# Clear screen
+
+# Print top padding
+print_empty_lines $TOP_PADDING
+
+# Create left padding string
+left_padding=$(printf "%${LEFT_PADDING}s" "")
+
+# Calculate the maximum length of the logo
+max_logo_length=0
+for line in "${logo[@]}"; do
+  current_length=$(get_visual_length "$line")
+  ((current_length > max_logo_length)) && max_logo_length=$current_length
+done
+
+# Add padding between logo and info
+padding=15
+max_logo_length=$((max_logo_length + padding))
+
+# Starting line for system information (0-based index)
+start_line=5
+
+# Print logo and information side by side
+for i in "${!logo[@]}"; do
+  # Create colored version of the logo line
+  colored_logo=$(colorize_string "${logo[$i]}")
+
+  if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
+    # Create the padding
+    visual_length=$(get_visual_length "${logo[$i]}")
+    padding_spaces=$((max_logo_length - visual_length))
+    padding=$(printf "%${padding_spaces}s" "")
+
+    # Print logo with system information
+    echo -e "${left_padding}${colored_logo}${padding}${sys_info[$((i - start_line))]}"
+  else
+    # Print only logo
+    echo -e "${left_padding}${colored_logo}"
+  fi
+done
+
+# Print bottom padding
+print_empty_lines $BOTTOM_PADDING
