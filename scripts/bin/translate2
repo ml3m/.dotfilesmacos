@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [source_lang] text... target_lang"
+    echo "Example: $0 fr 'Bonjour le monde' en"
+    echo "If source_lang is omitted, auto-detection will be used"
+    exit 1
+}
+
+# Function to urlencode the text
+urlencode() {
+    python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1]))' "$1"
+}
+
+# Check if at least one argument is provided
+if [ $# -lt 1 ]; then
+    usage
+fi
+
+# Initialize variables
+target_lang="en"  # Default target language is English
+text=""
+
+# Process arguments
+if [ $# -eq 1 ]; then
+    # Only text provided, use auto-detection
+    source_lang="auto"
+    text="$1"
+elif [ $# -eq 2 ]; then
+    # Text and target language provided
+    source_lang="auto"
+    text="$1"
+    target_lang="$2"
+else
+    # Source language, text, and target language provided
+    source_lang="$1"
+    target_lang="${!#}"  # Get the last argument
+    # Concatenate all arguments except first and last with spaces
+    text=$(printf "%s " "${@:2:$#-2}")
+fi
+
+# Trim trailing space from text
+text="${text% }"
+
+# URL encode the text
+encoded_text=$(urlencode "$text")
+
+# Make the translation request
+response=$(curl -s "https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source_lang}&tl=${target_lang}&dt=t&q=${encoded_text}")
+
+# Extract the translation using Python (more reliable than bash string manipulation)
+translation=$(python3 -c "
+import sys, json
+response = json.loads(sys.argv[1])
+translation = ''
+for segment in response[0]:
+    if segment[0]:
+        translation += segment[0]
+print(translation.strip())
+" "$response")
+
+echo "$translation"

@@ -151,6 +151,12 @@ alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
 # 'tmux new-session -d -s my_session "vim /path/to/your/file" && tmux attach-session -t my_session'
 alias todo='tmux new-session -d -s TODO "nvim ~/Library/Mobile\ Documents/com~apple~CloudDocs/main/TODO/todo.org" && tmux attach-session -t TODO'
 
+
+
+#----------------------- MACOS --------------------------
+alias kill_animation_dock= 'defaults write com.apple.dock autohide-time-modifier -int 0;killall Dock'
+
+
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 
@@ -160,7 +166,6 @@ export PATH="/usr/local/opt/mysql@8.4/bin:$PATH"
 export PATH="$HOME/bin:$PATH"
 export XDG_CONFIG_HOME="$HOME/.config"
 
-. "$HOME/.cargo/env"
 export PATH=$PATH:$HOME/go/bin
 
 # bun completions
