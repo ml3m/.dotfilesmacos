@@ -21,6 +21,41 @@ else
     hub_names=("${@:1:$#-1}")
 fi
 
+# Define the hubs directory
+base_dir="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+hubs_dir="${base_dir}/hubs"
+
+# Ensure the hubs directory exists
+mkdir -p "$hubs_dir"
+
+# Check if each hub exists, and prompt the user to create it if it doesn't
+for hub in "${hub_names[@]}"; do
+    # Format the hub name as a markdown file
+    hub_file="${hubs_dir}/$(echo "$hub" | tr '[:lower:]' '[:upper:]').md"
+    if [ ! -e "$hub_file" ]; then
+        echo "The hub '$hub' does not exist in the 'hubs/' directory."
+        while true; do
+            read -n 1 -p "Do you want to create the hub '$hub'? (y/n): " choice
+            echo  # Move to a new line after user input
+            case "$choice" in
+                [Yy])
+                    # Create the hub markdown file with the appropriate content
+                    echo "This is the hub for $(echo "$hub" | tr '[:lower:]' '[:upper:]') created on: $(date "+%Y-%m-%d")" > "$hub_file"
+                    echo "Hub '$hub' created at $hub_file."
+                    break
+                    ;;
+                [Nn])
+                    echo "Hub '$hub' was not created."
+                    break
+                    ;;
+                *)
+                    echo "Invalid input. Please press 'y' or 'n'."
+                    ;;
+            esac
+        done
+    fi
+done
+
 # Convert hub names to uppercase for tags and hubs
 tags=()
 hubs=()
@@ -35,7 +70,6 @@ note_name=$(echo "$file_name" | tr ' ' '_')
 formatted_file_name=$(date "+%Y-%m-%d")_${note_name}.md
 
 # Define the directories to search for existing files
-base_dir="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
 inbox_dir="${base_dir}/inbox"
 notes_dir="${base_dir}/notes"
 
