@@ -1,12 +1,76 @@
-#!/bin/zsh
+#!/bin/bash
 
-if [ -z "$1" ]; then
-    echo "Error: A file name must be set, e.g. on \"Alice's Adventures in Wonderland\"."
+if [ "$#" -lt 1 ]; then
+    echo "Error: Usage is 'on <hub-name> [<hub-name> ...] \"file name\"'"
     exit 1
 fi
 
-file_name=$(echo "$1" | tr ' ' '-')
-formatted_file_name=$(date "+%Y-%m-%d")_${file_name}.md
+# Extract the file name (last argument)
+file_name="${@: -1}"
+
+# Extract the hub names (all arguments except the last one, if any)
+if [ "$#" -eq 1 ]; then
+    hub_names=()  # No hub names provided
+else
+    hub_names=("${@:1:$#-1}")
+fi
+
+# Convert hub names to uppercase for tags and hubs
+tags=()
+hubs=()
+for hub in "${hub_names[@]}"; do
+    upper_hub=$(echo "$hub" | tr '[:lower:]' '[:upper:]')
+    tags+=("$upper_hub")
+    hubs+=("[[$upper_hub]]")
+done
+
+# Format the file name
+formatted_file_name=$(date "+%Y-%m-%d")_$(echo "$file_name" | tr ' ' '_').md
+
+# Create the file in the desired directory
 cd "/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main" || exit
 touch "inbox/${formatted_file_name}"
-nvim "inbox/${formatted_file_name}"
+
+# Generate the metadata
+metadata="---
+date: $(date "+%Y-%m-%d")
+time: $(date "+%H:%M:%S")
+tags:
+"
+if [ ${#tags[@]} -eq 0 ]; then
+    metadata+="    -
+"
+else
+    for tag in "${tags[@]}"; do
+        metadata+="    - $tag
+"
+    done
+fi
+
+metadata+="hubs:
+"
+if [ ${#hubs[@]} -eq 0 ]; then
+    metadata+="    - \"[[]]\"
+"
+else
+    for hub in "${hubs[@]}"; do
+        metadata+="    - \"$hub\"
+"
+    done
+fi
+
+metadata+="urls:
+    -
+---
+
+# $(echo "$file_name" | tr ' ' '_')
+"
+
+# Write the metadata to the file
+echo "$metadata" > "inbox/${formatted_file_name}"
+
+# Open the file in Neovim, clean up, format the title, and save the file
+nvim -c "silent! 1,/^\\S/s/^\\n\\{1,}//" \
+     -c "silent! /^# /s/-/ /g" \
+     -c "w" \
+     "inbox/${formatted_file_name}"
