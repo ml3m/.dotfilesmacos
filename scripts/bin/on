@@ -5,8 +5,14 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-# Extract the file name (last argument)
-file_name="${@: -1}"
+# Extract the file name (last argument) and trim leading/trailing whitespace
+file_name=$(echo "${@: -1}" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+# Check if the file name is empty after trimming
+if [ -z "$file_name" ]; then
+    echo "Error: File name cannot be empty or contain only whitespace."
+    exit 1
+fi
 
 # Extract the hub names (all arguments except the last one, if any)
 if [ "$#" -eq 1 ]; then
@@ -24,12 +30,45 @@ for hub in "${hub_names[@]}"; do
     hubs+=("[[$upper_hub]]")
 done
 
-# Format the file name
-formatted_file_name=$(date "+%Y-%m-%d")_$(echo "$file_name" | tr ' ' '_').md
+# Format the file name (replace spaces with underscores)
+note_name=$(echo "$file_name" | tr ' ' '_')
+formatted_file_name=$(date "+%Y-%m-%d")_${note_name}.md
 
-# Create the file in the desired directory
-cd "/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main" || exit
-touch "inbox/${formatted_file_name}"
+# Define the directories to search for existing files
+base_dir="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+inbox_dir="${base_dir}/inbox"
+notes_dir="${base_dir}/notes"
+
+# Ensure the directories exist
+mkdir -p "$inbox_dir"
+mkdir -p "$notes_dir"
+
+# Check if a file with the same note name (ignoring the date) already exists
+existing_file=$(find "$inbox_dir" "$notes_dir" -type f -name "*_${note_name}.md" | head -n 1)
+
+if [ -n "$existing_file" ]; then
+    echo "A file with the name '${note_name}.md' already exists:"
+    echo "$existing_file"
+    while true; do
+        read -n 1 -p "Do you want to open the existing file? (y/n): " choice
+        echo  # Move to a new line after user input
+        case "$choice" in
+            [Yy]) 
+                # Open the existing file in Neovim
+                nvim "$existing_file"
+                exit 0
+                ;;
+            [Nn]) 
+                # Do nothing and exit
+                echo "No action taken. Exiting."
+                exit 0
+                ;;
+            *) 
+                echo "Invalid input. Please press 'y' or 'n'."
+                ;;
+        esac
+    done
+fi
 
 # Generate the metadata
 metadata="---
@@ -63,14 +102,15 @@ metadata+="urls:
     -
 ---
 
-# $(echo "$file_name" | tr ' ' '_')
+# ${note_name}
 "
 
 # Write the metadata to the file
-echo "$metadata" > "inbox/${formatted_file_name}"
+new_file_path="${inbox_dir}/${formatted_file_name}"
+echo "$metadata" > "$new_file_path"
 
 # Open the file in Neovim, clean up, format the title, and save the file
 nvim -c "silent! 1,/^\\S/s/^\\n\\{1,}//" \
      -c "silent! /^# /s/-/ /g" \
      -c "w" \
-     "inbox/${formatted_file_name}"
+     "$new_file_path"
