@@ -147,9 +147,13 @@ alias tk="tmux kill-server"
 alias ic="~/Library/Mobile\ Documents/com~apple~CloudDocs/"
 
 #----------------------- Obsidian --------------------------
-alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
+#old one
+#alias oo="~/Library/Mobile\ Documents/com~apple~CloudDocs/main/"
+alias oo="~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/main/"
+
 # 'tmux new-session -d -s my_session "vim /path/to/your/file" && tmux attach-session -t my_session'
-alias todo='tmux new-session -d -s TODO "nvim ~/Library/Mobile\ Documents/com~apple~CloudDocs/main/TODO/todo.org" && tmux attach-session -t TODO'
+# I don't use this.
+# alias todo='tmux new-session -d -s TODO "nvim ~/Library/Mobile\ Documents/com~apple~CloudDocs/main/TODO/todo.org" && tmux attach-session -t TODO'
 
 
 
