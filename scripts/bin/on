@@ -146,5 +146,4 @@ echo "$metadata" > "$new_file_path"
 # Open the file in Neovim, clean up, format the title, and save the file
 nvim -c "silent! 1,/^\\S/s/^\\n\\{1,}//" \
      -c "silent! /^# /s/-/ /g" \
-     -c "w" \
      "$new_file_path"
