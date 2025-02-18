@@ -1,7 +1,11 @@
 #!/bin/zsh
 
 # Define the folder where the files will be created
-TARGET_FOLDER="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main/hubs/"
+# old one
+#TARGET_FOLDER="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main/hubs/"
+TARGET_FOLDER="/Users/mlem/Library/Mobile Documents/iCloud~md~obsidian/Documents/main"
+
+
 
 # Ensure the folder exists
 mkdir -p "$TARGET_FOLDER"

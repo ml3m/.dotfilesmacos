@@ -1,7 +1,10 @@
 #!/bin/zsh
 
 # Directory containing markdown files
-VAULT_DIR="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+#
+# old one
+#VAULT_DIR="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+VAULT_DIR="/Users/mlem/Library/Mobile Documents/iCloud~md~obsidian/Documents/main"
 SOURCE_DIR="inbox"
 DEST_DIR="notes"
 

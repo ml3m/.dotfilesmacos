@@ -22,7 +22,9 @@ else
 fi
 
 # Define the hubs directory
-base_dir="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+# old one 
+#base_dir="/Users/mlem/Library/Mobile Documents/com~apple~CloudDocs/main"
+base_dir="/Users/mlem/Library/Mobile Documents/iCloud~md~obsidian/Documents/main"
 hubs_dir="${base_dir}/hubs"
 
 # Ensure the hubs directory exists
