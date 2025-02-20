@@ -240,24 +240,42 @@ sys_info=(
 )
 
 # Apple logo
+#logo=(
+#  "                    'c."
+#  "                 ,xNMM."
+#  "               .OMMMMo"
+#  "               OMMM0,"
+#  "     .;loddo:' loolloddol;."
+#  "   cKMMMMMMMMMMNWMMMMMMMMMM0:"
+#  " .KMMMMMMMMMMMMMMMMMMMMMMMWd."
+#  " XMMMMMMMMMMMMMMMMMMMMMMMX."
+#  ";MMMMMMMMMMMMMMMMMMMMMMMM:"
+#  ":MMMMMMMMMMMMMMMMMMMMMMMM:"
+#  ".MMMMMMMMMMMMMMMMMMMMMMMMX."
+#  " kMMMMMMMMMMMMMMMMMMMMMMMMWd."
+#  " .XMMMMMMMMMMMMMMMMMMMMMMMMMMk"
+#  "  .XMMMMMMMMMMMMMMMMMMMMMMMMK."
+#  "    kMMMMMMMMMMMMMMMMMMMMMMd"
+#  "     ;KMMMMMMMWXXWMMMMMMMk."
+#  "       .cooc,.    .,coo:."
+#)
+
 logo=(
-  "                    'c."
-  "                 ,xNMM."
-  "               .OMMMMo"
-  "               OMMM0,"
-  "     .;loddo:' loolloddol;."
-  "   cKMMMMMMMMMMNWMMMMMMMMMM0:"
-  " .KMMMMMMMMMMMMMMMMMMMMMMMWd."
-  " XMMMMMMMMMMMMMMMMMMMMMMMX."
-  ";MMMMMMMMMMMMMMMMMMMMMMMM:"
-  ":MMMMMMMMMMMMMMMMMMMMMMMM:"
-  ".MMMMMMMMMMMMMMMMMMMMMMMMX."
-  " kMMMMMMMMMMMMMMMMMMMMMMMMWd."
-  " .XMMMMMMMMMMMMMMMMMMMMMMMMMMk"
-  "  .XMMMMMMMMMMMMMMMMMMMMMMMMK."
-  "    kMMMMMMMMMMMMMMMMMMMMMMd"
-  "     ;KMMMMMMMWXXWMMMMMMMk."
-  "       .cooc,.    .,coo:."
+'       _'
+'       \`*-.'
+'        )  _`-.'
+'       .  : `. .'
+'       : _   '\''  \\'
+'       ; *` _.   `*-._'
+'       `-.-'\''          `-.'
+'         ;       `       `.'
+'         :.       .        \'
+'         . \\  .   :   .-'\''   .'
+'         '\''  `+.;  ;  '\''      :'
+'         :  '\''  |    ;       ;-.'
+'         ; '\''   : :`-:     _.`* ;'
+'[bug] .*'\'' /  .*'\'' ; .*`- +'\''  `*'\'''
+'      `*-*   `*-*  `*-*'\'''
 )
 
 # Clear screen
