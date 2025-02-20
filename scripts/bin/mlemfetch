@@ -187,21 +187,51 @@ get_disk() {
 }
 
 # Function to colorize a string randomly
+# Function to colorize a string randomly
 colorize_string() {
-  local string="$1"
-  local result=""
-  local -i len=${#string}
-
-  for ((i = 0; i < len; i++)); do
-    local char="${string:$i:1}"
-    if [[ "$char" != " " ]]; then
-      local color_index=$((RANDOM % ${#colors[@]}))
-      result+="${colors[$color_index]}${char}${NC}"
-    else
-      result+="$char"
-    fi
-  done
-  echo -e "$result"
+    local string="$1"
+    local result=""
+    local -i len=${#string}
+    local skip_next=0
+    
+    for ((i = 0; i < len; i++)); do
+        # Skip this iteration if we're in the middle of an escape sequence
+        if ((skip_next > 0)); then
+            skip_next=$((skip_next - 1))
+            continue
+        fi
+        
+        local char="${string:$i:1}"
+        
+        # Handle backslash escapes
+        if [[ "$char" == "\\" ]]; then
+            # Peek at next character
+            if ((i + 1 < len)); then
+                next_char="${string:$i+1:1}"
+                # Keep backslash and next character together
+                result+="${colors[$((RANDOM % ${#colors[@]}))]}\\${next_char}${NC}"
+                skip_next=1
+                continue
+            fi
+        fi
+        
+        # Handle single quotes
+        if [[ "$char" == "'" ]]; then
+            # Peek at surrounding characters for escape sequence
+            if ((i > 0)) && [[ "${string:$i-1:1}" == "\\" ]]; then
+                continue  # Skip this quote as it's part of an escape sequence
+            fi
+        fi
+        
+        # Regular character coloring
+        if [[ "$char" != " " ]]; then
+            result+="${colors[$((RANDOM % ${#colors[@]}))]}${char}${NC}"
+        else
+            result+="$char"
+        fi
+    done
+    
+    echo -e "$result"
 }
 
 # Function to get the visual length of a string (excluding color codes)
@@ -269,7 +299,7 @@ logo=(
 '       ; *` _.   `*-._'
 '       `-.-'\''          `-.'
 '         ;       `       `.'
-'         :.       .        \'
+'         :.       .        \\'
 '         . \\  .   :   .-'\''   .'
 '         '\''  `+.;  ;  '\''      :'
 '         :  '\''  |    ;       ;-.'
@@ -278,10 +308,93 @@ logo=(
 '      `*-*   `*-*  `*-*'\'''
 )
 
-# Clear screen
+# used for allignment and spaces assist
+#       _
+#       \`*-.
+#        )  _`-.
+#       .  : `. .
+#       : _   '  \
+#       ; *` _.   `*-._
+#       `-.-'          `-.
+#         ;       `       `.
+#         :.       .        \
+#         . \  .   :   .-'   .
+#         '  `+.;  ;  '      :
+#         :  '  |  ,  ;       ;-.
+#         ; '   : :`-:     _.`* ; 
+#[bug] .*' /  .*' ; .*`- +'  `*'
+#      `*-*   `*-*  `*-*'
+
+
+# Function to move cursor up N lines
+move_cursor_up() {
+    local lines=$1
+    tput cuu $lines
+}
+
+# Function to save cursor position
+save_cursor_position() {
+    tput sc
+}
+
+# Function to restore cursor position
+restore_cursor_position() {
+    tput rc
+}
+
+# Function to continuously update colors
+update_colors() {
+    local logo_height=${#logo[@]}
+    
+    while true; do
+        # Save current cursor position
+        save_cursor_position
+        
+        # Print the logo with new random colors
+        for i in "${!logo[@]}"; do
+            # Create colored version of the logo line
+            colored_logo=$(colorize_string "${logo[$i]}")
+            echo -e "\r${left_padding}${colored_logo}"
+        done
+        
+        # Restore cursor position
+        restore_cursor_position
+        
+        # Wait 200ms
+        sleep 0.2
+    done
+}
+
+
+cleanup() {
+    tput cnorm # Restore cursor
+    clear
+    exit
+}
+
+# Trap SIGINT and SIGTERM to clean up properly
+trap cleanup SIGINT SIGTERM
+
+# Hide the cursor
+tput civis
+
+# clear 
+clear
 
 # Print top padding
 print_empty_lines $TOP_PADDING
+
+
+get_visual_length() {
+    local string="$1"
+    # Remove color codes and count actual visible characters
+    # Then remove escape characters from the count
+    echo -n "$string" | 
+        sed 's/\x1b\[[0-9;]*m//g' | 
+        sed 's/\\./x/g' | # Replace escaped chars with single char
+        wc -m | 
+        tr -d ' '
+}
 
 # Create left padding string
 left_padding=$(printf "%${LEFT_PADDING}s" "")
@@ -289,35 +402,39 @@ left_padding=$(printf "%${LEFT_PADDING}s" "")
 # Calculate the maximum length of the logo
 max_logo_length=0
 for line in "${logo[@]}"; do
-  current_length=$(get_visual_length "$line")
-  ((current_length > max_logo_length)) && max_logo_length=$current_length
+    current_length=$(get_visual_length "$line")
+    if ((current_length > max_logo_length)); then
+        max_logo_length=$current_length
+    fi
 done
 
 # Add padding between logo and info
-padding=15
-max_logo_length=$((max_logo_length + padding))
+padding=20
 
 # Starting line for system information (0-based index)
 start_line=5
 
+total_logo_width=$((max_logo_length + padding))
+
 # Print logo and information side by side
 for i in "${!logo[@]}"; do
-  # Create colored version of the logo line
-  colored_logo=$(colorize_string "${logo[$i]}")
-
-  if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
-    # Create the padding
-    visual_length=$(get_visual_length "${logo[$i]}")
-    padding_spaces=$((max_logo_length - visual_length))
-    padding=$(printf "%${padding_spaces}s" "")
-
-    # Print logo with system information
-    echo -e "${left_padding}${colored_logo}${padding}${sys_info[$((i - start_line))]}"
-  else
-    # Print only logo
-    echo -e "${left_padding}${colored_logo}"
-  fi
+    colored_logo=$(colorize_string "${logo[$i]}")
+    
+    if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
+        visual_length=$(get_visual_length "${logo[$i]}")
+        padding_spaces=$((total_logo_width - visual_length))
+        padding=$(printf "%${padding_spaces}s" "")
+        echo -e "${left_padding}${colored_logo}${padding}${sys_info[$((i - start_line))]}"
+    else
+        echo -e "${left_padding}${colored_logo}"
+    fi
 done
 
 # Print bottom padding
 print_empty_lines $BOTTOM_PADDING
+
+# Move cursor up to the start of the logo
+move_cursor_up $((${#logo[@]} + BOTTOM_PADDING))
+
+# Start the color update loop
+update_colors
