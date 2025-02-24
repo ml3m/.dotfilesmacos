@@ -1,0 +1,165 @@
+
+#!/bin/bash
+
+# Colors array
+colors=(
+  '\033[31m' # Red
+  '\033[32m' # Green
+  '\033[33m' # Yellow
+  '\033[34m' # Blue
+  '\033[35m' # Purple
+  '\033[36m' # Cyan
+  '\033[91m' # Light Red
+  '\033[92m' # Light Green
+  '\033[93m' # Light Yellow
+  '\033[94m' # Light Blue
+  '\033[95m' # Light Purple
+  '\033[96m' # Light Cyan
+)
+NC='\033[0m' # No Color
+WHITE='\033[97m' # White
+
+# Padding settings
+LEFT_PADDING=4 # Number of spaces for left padding
+TOP_PADDING=2 # Number of empty lines for top padding
+BOTTOM_PADDING=2 # Number of empty lines for bottom padding
+
+# Function to colorize a string randomly
+colorize_string() {
+  local string="$1"
+  local result=""
+  local -i len=${#string}
+
+  for ((i = 0; i < len; i++)); do
+    local char="${string:$i:1}"
+    if [[ "$char" != " " ]]; then
+      local color_index=$((RANDOM % ${#colors[@]}))
+      result+="${colors[$color_index]}${char}${NC}"
+    else
+      result+="$char"
+    fi
+  done
+  echo -e "$result"
+}
+
+# Function to get the visual length of a string (excluding color codes)
+get_visual_length() {
+  local string="$1"
+  echo -n "$string" | sed 's/\x1b\[[0-9;]*m//g' | wc -c
+}
+
+# Function to print empty lines
+print_empty_lines() {
+  local count=$1
+  for ((i = 0; i < count; i++)); do
+    echo
+  done
+}
+
+# Apple logo
+logo=(
+'       _'
+'       \`*-.'
+'        )  _`-.'
+'       .  : `. .'
+'       : _   '\''  \\'
+'       ; *` _.   `*-._'
+'       `-.-'\''          `-.'
+'         ;       `       `.'
+'         :.       .        \'
+'         . \\  .   :   .-'\''   .'
+'         '\''  `+.;  ;  '\''      :'
+'         :  '\''  |    ;       ;-.'
+'         ; '\''   : :`-:     _.`* ;'
+'[bug] .*'\'' /  .*'\'' ; .*`- +'\''  `*'\'''
+'      `*-*   `*-*  `*-*'\'''
+)
+
+# Function to move cursor up N lines
+move_cursor_up() {
+    local lines=$1
+    tput cuu $lines
+}
+
+# Function to save cursor position
+save_cursor_position() {
+    tput sc
+}
+
+# Function to restore cursor position
+restore_cursor_position() {
+    tput rc
+}
+
+# Function to continuously update colors
+update_colors() {
+    local logo_height=${#logo[@]}
+    
+    while [[ $running -eq 1 ]]; do
+        # Save current cursor position
+        save_cursor_position
+        
+        # Print the logo with new random colors
+        for i in "${!logo[@]}"; do
+            # Create colored version of the logo line
+            colored_logo=$(colorize_string "${logo[$i]}")
+            echo -e "\r${left_padding}${colored_logo}"
+        done
+        
+        # Restore cursor position
+        restore_cursor_position
+        
+        # Wait 200ms
+        sleep 0.2
+    done
+}
+
+# Function to handle key press
+stop_animation() {
+    running=0
+    clear
+    echo "Animation stopped. Exiting..."
+    exit 0
+}
+
+# Trap to handle script termination
+trap stop_animation SIGINT
+
+# Variable to control the animation loop
+running=1
+
+# Start a background process to listen for key presses
+{
+    read -n 1 -s
+    stop_animation
+} &
+
+clear
+
+# Print top padding
+print_empty_lines $TOP_PADDING
+
+# Create left padding string
+left_padding=$(printf "%${LEFT_PADDING}s" "")
+
+# Calculate the maximum length of the logo
+max_logo_length=0
+for line in "${logo[@]}"; do
+  current_length=$(get_visual_length "$line")
+  ((current_length > max_logo_length)) && max_logo_length=$current_length
+done
+
+# Print logo
+for i in "${!logo[@]}"; do
+    colored_logo=$(colorize_string "${logo[$i]}")
+    echo -e "${left_padding}${colored_logo}"
+done
+
+# Print bottom padding
+print_empty_lines $BOTTOM_PADDING
+
+# Move cursor up to the start of the logo
+move_cursor_up $((${#logo[@]} + BOTTOM_PADDING))
+
+# Start the color update loop
+update_colors
