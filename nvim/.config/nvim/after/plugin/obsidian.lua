@@ -2,7 +2,7 @@ require("obsidian").setup({
   workspaces = {
     {
         name = "main",
-        path = "~/Library/Mobile Documents/com~apple~CloudDocs/main",
+        path = "/Users/mlem/Library/Mobile Documents/iCloud~md~obsidian/Documents/main",
       },
   },
   notes_subdir = "inbox",
