@@ -1,6 +1,7 @@
 /*rose-pine-moon.css*/
 * {
   --base:           #232136;
+  --base-rgb: 35, 33, 54;
   --surface:        #2a273f;
   --overlay:        #393552;
   --muted:          #6e6a86;
@@ -21,17 +22,17 @@
 }
 
 /*remove macos buttons*/
+/*
 .titlebar-buttonbox {
     visibility: collapse !important;
   
 }
+*/
 
 /* Change selected tab background color */
-/*
 .tabbrowser-tab[selected="true"] .tab-content {
   background-color: color: var(--pine) !important;
 }
-*/
 
 /* tab 'x' color */
 .tabbrowser-tab[selected="true"] .tab-content {
@@ -40,20 +41,53 @@
 
 
 .tab-icon-image {
-  height: 20px !important;
-  width: 20px !important;
+  height: 18px !important;
+  width: 18px !important;
 }
 
 
 
-label.tab-text.tab-label {
-  color: var(--irisLL) !important;
+/* Set all tab text to white */
+label.tab-text.tab-label,
+.tab:not(.active) label.tab-text.tab-label {
+  color: var(--text) !important;
   font-size: 1.5rem;
+  opacity: 1 !important;
 }
 
+/* Override the inactive accent color */
+:root {
+  --lwt-accent-color-inactive: var(--text) !important;
+  --inactive-titlebar-opacity: 1 !important;
+}
+
+/* Target inactive tabs specifically */
+.tab:not(.active) {
+  opacity: 1 !important;
+}
+
+/* Additional selectors that might be used */
+.tab.inactive label,
+.tabbrowser-tab:not([selected="true"]) .tab-content,
+.tabbrowser-tab:not([selected="true"]) .tab-label-container {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}
+
+/* Force all text colors in tabs to white */
+.tabbrowser-tab .tab-label,
+.tab-text,
+.tab:not(.active) .tab-text {
+  color: var(--text) !important;
+  opacity: 1 !important;
+}
+
+
+
+
+/* side tabs bar */
 toolbox#navigator-toolbox.browser-toolbox-background {
-  background-color: var(--base) !important;
-  opacity: 0.75 !important; /* Adjust this value as needed */ 
+  background-color: rgba(var(--base-rgb), 0.35) !important;
 }
 
 #zen-sidebar-splitter {
