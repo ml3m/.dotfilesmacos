@@ -121,6 +121,7 @@ alias gs="git status"
 alias gp="git push"
 alias g="git"
 alias gaa="sudo git add ."
+alias gss='git log --all --topo-order --graph --show-signature'
 
 #-----------------Current Dir-------------------------
 alias cdd="cd ~/Downloads/"
