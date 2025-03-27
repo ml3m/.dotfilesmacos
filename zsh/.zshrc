@@ -185,3 +185,4 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init - zsh)"
 
 export PATH=$PATH:$(npm config get prefix)/bin
+

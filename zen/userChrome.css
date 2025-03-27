@@ -29,7 +29,7 @@
 }
 */
 
-/* Change selected tab background color */
+/* Change active tab background color */
 .tabbrowser-tab[selected="true"] .tab-content {
   background-color: color: var(--pine) !important;
 }
@@ -81,8 +81,6 @@ label.tab-text.tab-label,
   color: var(--text) !important;
   opacity: 1 !important;
 }
-
-
 
 
 /* side tabs bar */
