@@ -186,4 +186,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init - zsh)"
 
 export PATH=$PATH:$(npm config get prefix)/bin
+export PATH="/Applications/love.app/Contents/MacOS:$PATH"
 
+source $HOME/.dotfilesmacos/zsh/.set_highlighters.zsh
