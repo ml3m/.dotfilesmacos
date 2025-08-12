@@ -22,6 +22,7 @@ WHITE='\033[97m' # White
 LEFT_PADDING=4 # Number of spaces for left padding
 TOP_PADDING=2 # Number of empty lines for top padding
 BOTTOM_PADDING=2 # Number of empty lines for bottom padding
+delay=${1:-0.30}
 
 # Get System Information
 get_os() {
@@ -269,44 +270,6 @@ sys_info=(
   "${colors[6]}Disk: $(get_disk)${NC}"
 )
 
-# Apple logo
-#logo=(
-#  "                    'c."
-#  "                 ,xNMM."
-#  "               .OMMMMo"
-#  "               OMMM0,"
-#  "     .;loddo:' loolloddol;."
-#  "   cKMMMMMMMMMMNWMMMMMMMMMM0:"
-#  " .KMMMMMMMMMMMMMMMMMMMMMMMWd."
-#  " XMMMMMMMMMMMMMMMMMMMMMMMX."
-#  ";MMMMMMMMMMMMMMMMMMMMMMMM:"
-#  ":MMMMMMMMMMMMMMMMMMMMMMMM:"
-#  ".MMMMMMMMMMMMMMMMMMMMMMMMX."
-#  " kMMMMMMMMMMMMMMMMMMMMMMMMWd."
-#  " .XMMMMMMMMMMMMMMMMMMMMMMMMMMk"
-#  "  .XMMMMMMMMMMMMMMMMMMMMMMMMK."
-#  "    kMMMMMMMMMMMMMMMMMMMMMMd"
-#  "     ;KMMMMMMMWXXWMMMMMMMk."
-#  "       .cooc,.    .,coo:."
-#)
-
-logo=(
-'       _'
-'       \`*-.'
-'        )  _`-.'
-'       .  : `. .'
-'       : _   '\''  \\'
-'       ; *` _.   `*-._'
-'       `-.-'\''          `-.'
-'         ;       `       `.'
-'         :.       .        \\'
-'         . \\  .   :   .-'\''   .'
-'         '\''  `+.;  ;  '\''      :'
-'         :  '\''  |    ;       ;-.'
-'         ; '\''   : :`-:     _.`* ;'
-'[bug] .*'\'' /  .*'\'' ; .*`- +'\''  `*'\'''
-'      `*-*   `*-*  `*-*'\'''
-)
 
 # used for allignment and spaces assist
 #       _
@@ -326,6 +289,160 @@ logo=(
 #      `*-*   `*-*  `*-*'
 
 
+
+# Animation frames array
+# Frame 0 (air in)
+# fixed formating
+frame_0=(
+'                               '
+'                               '
+'       _'
+'       \`*-.'
+'        )  _`-.'
+'       .  : `. .'
+'       : _   '\''  \\'
+'       ; *` _.   `*-._'
+'       `-.-'\''          `-.   '
+'         ;       `       `.    '
+'         :.       .        \\'
+'         . \\  .   :   .-'\''   .'
+'         '\''  `+.;  ;  '\''      :'
+'         :  '\''  |  ,  ;       ;-.'
+'         ; '\''   : :`-:     _.`*  ;'
+'[bug] .*'\'' /  .*'\'' ; .*`- +'\''  `*'\''*'
+'      `*-*   `*-*  `*-*'\''       '
+)
+
+
+# Frame 1 (air out)
+# fixed formating
+frame_1=(
+'                               '
+'                               '
+''
+'       _                        '
+'       \`*-.                    '
+'        )  _`-.                 '
+'       .  : `. .                '
+'       : _   '\''  \\               '
+'       / *` _.   `*-._          '
+'       `-.-'\''          `-.       '
+'         :.              \\    '
+'         . \\      `   .-. .   '
+'         '\''  ._ ;  ;  '\''     :   '
+'         :  , `|  ,  ;      ;-.'
+'         ; '\''   : :`-:    _.`*  ;'
+'[bug] .*'\'' /  .*'\'' ; .*`- +'\''  `*'\'' '
+'      `*-*   `*-*  `*-*'\''       '
+)
+
+# Frame 2 (paw)
+frame_2=(
+'                               '
+'                               '
+''
+'        _                        '
+'        \`*,.                   '
+'        /  _ `-.                 '
+'       .  : `, `.                '
+'       ; _   '\''  |               '
+'       / *` _,   `*-._          '
+'       `-`'\''           `-.       '
+'         : .             \\    '
+'         ; ;      `   .-. .   '
+'        , ; `. ;  ;  '\''     :   '
+'    .*'\''` /    `|  ,  ;      ;-.'
+'    `*-'\''`      ; :`-:    _.`*  ;'
+'[bug]        .*'\'' ; .*`- +`  `*'\'' '
+'             `*-*  `*-*'\''       '
+)
+
+# Frame 3 (bug to mouth 1)
+frame_3=(
+'                               '
+'                               '
+''
+'        _                        '
+'        \`*,.                   '
+'        /  _ `-.                 '
+'       .  : `, `.                '
+'       ; _   '\''  |               '
+'       / *` _,   `*-._          '
+'       `-`'\''           `-.       '
+'         : .             \\    '
+'         ; ;      `   .-. .   '
+' [bug]  , ; `. ;  ;  '\''     :   '
+'    .*'\''` /    `|  ,  ;      ;-.'
+'    `*-'\''`      ; :`-:    _.`*  ;'
+'             .*'\'' ; .*`- +`  `*'\'' '
+'             `*-*  `*-*'\''       '
+)
+
+# Frame 4 (bug to mouth 2)
+frame_4=(
+'                               '
+'                               '
+''
+'        _                        '
+'        \`*,.                   '
+'        /  _ `-.                 '
+'       .  : `, `.                '
+'       ; _   '\''  |               '
+'       / *` _,   `*-._          '
+'       `-`'\''           `-.       '
+'         : .             \\    '
+'   [bug], ,;      `   .-. .   '
+'    ,-'\''` /  `. ;  ;  '\''     :   '
+'    `*-'\''`     `|  ,  ;      ;-.'
+'               ; :`-:    _.`*  ;'
+'             .*'\'' ; .*`- +`  `*'\'' '
+'             `*-*  `*-*'\''       '
+)
+
+# Frame 5 (bug to mouth 3)
+frame_5=(
+'                               '
+'                               '
+''
+'        _                        '
+'        \`*,.                   '
+'        /  _ `-.                 '
+'       .  : `, `.                '
+'       ; _   '\''  |               '
+'       / *` _,   `*-._          '
+'       `-`'\''           `-.       '
+'    [bug]: ,             \\    '
+'    ;`'\''` /,;      `   .-. .   '
+'    `*-'\''`   `. ;  ;  '\''     :   '
+'              `|  ,  ;      ;-.'
+'               ; :`-:    _.`*  ;'
+'             .*'\'' ; .*`- +`  `*'\'' '
+'             `*-*  `*-*'\''       '
+)
+
+# Frame 6 (back to paw)
+frame_6=(
+'                               '
+'                               '
+''
+'        _                        '
+'        \`*,.                   '
+'        /  _ `-.                 '
+'       .  : `, `.                '
+'       ; _   '\''  |               '
+'       / *` _,   `*-._          '
+'       `-`'\''           `-.       '
+'         : .             \\    '
+'         ; ;      `   .-. .   '
+'        , ; `. ;  ;  '\''     :   '
+'    .*'\''` /    `|  ,  ;      ;-.'
+'    `*-'\''`      ; :`-:    _.`*  ;'
+'             .*'\'' ; .*`- +`  `*'\'' '
+'             `*-*  `*-*'\''       '
+)
+
+# Array of frame variable names
+frames=(frame_0 frame_1 frame_2 frame_3 frame_4 frame_5 frame_6)
 # Function to move cursor up N lines
 move_cursor_up() {
     local lines=$1
@@ -342,26 +459,65 @@ restore_cursor_position() {
     tput rc
 }
 
-# Function to continuously update colors
+# Function to continuously update colors and animate frames
 update_colors() {
-    local logo_height=${#logo[@]}
+    local frame_count=${#frames[@]}
+    local current_frame=0
+    
+    # Safety check to avoid division by zero
+    if [ "$frame_count" -eq 0 ]; then
+        echo "Error: No frames available for animation"
+        return 1
+    fi
     
     while true; do
         # Save current cursor position
         save_cursor_position
         
-        # Print the logo with new random colors
-        for i in "${!logo[@]}"; do
-            # Create colored version of the logo line
-            colored_logo=$(colorize_string "${logo[$i]}")
-            echo -e "\r${left_padding}${colored_logo}"
+        # Build the entire frame as a single string
+        local frame_output=""
+        local frame_name="${frames[$current_frame]}"
+        eval "current_frame_array=(\"\${${frame_name}[@]}\")"
+        
+        for i in "${!current_frame_array[@]}"; do
+            # Create colored version of the frame line
+            colored_logo=$(colorize_string "${current_frame_array[$i]}")
+            
+            # Add line clearing and content
+            frame_output+="\r\033[K"
+            
+            # Build the line with system info if needed
+            if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
+                visual_length=$(get_visual_length "${current_frame_array[$i]}")
+                padding_spaces=$((total_logo_width - visual_length))
+                padding=$(printf "%${padding_spaces}s" "")
+                frame_output+="${left_padding}${colored_logo}${padding}${sys_info[$((i - start_line))]}"
+            else
+                frame_output+="${left_padding}${colored_logo}"
+            fi
+            
+            # Add newline except for last line
+            if [ $i -lt $((${#current_frame_array[@]} - 1)) ]; then
+                frame_output+="\n"
+            fi
         done
+        
+        # Print the entire frame at once
+        printf "%b" "$frame_output"
         
         # Restore cursor position
         restore_cursor_position
         
-        # Wait 200ms
-        sleep 0.2
+        
+        # Wait 300ms for frame animation
+        if [[ $current_frame -eq 2 || $current_frame -eq 3 || $current_frame -eq 4 || $current_frame -eq 5 || $current_frame -eq 6 || $current_frame -eq 7 ]]; then
+          sleep 0.1
+        else
+          sleep "$delay"
+        fi
+
+        # Move to next frame
+        current_frame=$(( (current_frame + 1) % frame_count ))
     done
 }
 
@@ -399,13 +555,16 @@ get_visual_length() {
 # Create left padding string
 left_padding=$(printf "%${LEFT_PADDING}s" "")
 
-# Calculate the maximum length of the logo
+# Calculate the maximum length across ALL frames for consistent alignment
 max_logo_length=0
-for line in "${logo[@]}"; do
-    current_length=$(get_visual_length "$line")
-    if ((current_length > max_logo_length)); then
-        max_logo_length=$current_length
-    fi
+for frame_name in "${frames[@]}"; do
+    eval "current_frame=(\"\${${frame_name}[@]}\")"
+    for line in "${current_frame[@]}"; do
+        current_length=$(get_visual_length "$line")
+        if ((current_length > max_logo_length)); then
+            max_logo_length=$current_length
+        fi
+    done
 done
 
 # Add padding between logo and info
@@ -416,12 +575,14 @@ start_line=5
 
 total_logo_width=$((max_logo_length + padding))
 
-# Print logo and information side by side
-for i in "${!logo[@]}"; do
-    colored_logo=$(colorize_string "${logo[$i]}")
+# Print first frame and information side by side
+# Create a temporary array to reference the first frame
+eval "initial_frame=(\"\${frame_0[@]}\")"
+for i in "${!initial_frame[@]}"; do
+    colored_logo=$(colorize_string "${initial_frame[$i]}")
     
     if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
-        visual_length=$(get_visual_length "${logo[$i]}")
+        visual_length=$(get_visual_length "${initial_frame[$i]}")
         padding_spaces=$((total_logo_width - visual_length))
         padding=$(printf "%${padding_spaces}s" "")
         echo -e "${left_padding}${colored_logo}${padding}${sys_info[$((i - start_line))]}"
@@ -434,7 +595,7 @@ done
 print_empty_lines $BOTTOM_PADDING
 
 # Move cursor up to the start of the logo
-move_cursor_up $((${#logo[@]} + BOTTOM_PADDING))
+move_cursor_up $((${#frame_0[@]} + BOTTOM_PADDING))
 
 # Start the color update loop
 update_colors
