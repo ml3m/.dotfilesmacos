@@ -1,0 +1,401 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# =====================================================
+# COMPREHENSIVE DOTFILES SETUP SCRIPT FOR MACOS
+# =====================================================
+# This script sets up a complete development environment
+# from scratch using the ~/.dotfilesmacos repository
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Emoji for better UX
+SUCCESS="✅"
+ERROR="❌"
+WARNING="⚠️"
+INFO="ℹ️"
+ROCKET="🚀"
+GEAR="⚙️"
+PACKAGE="📦"
+
+# Logging functions
+log_info() {
+    echo -e "${BLUE}${INFO} ${1}${NC}"
+}
+
+log_success() {
+    echo -e "${GREEN}${SUCCESS} ${1}${NC}"
+}
+
+log_warning() {
+    echo -e "${YELLOW}${WARNING} ${1}${NC}"
+}
+
+log_error() {
+    echo -e "${RED}${ERROR} ${1}${NC}"
+}
+
+log_header() {
+    echo -e "\n${PURPLE}${GEAR} ================================${NC}"
+    echo -e "${PURPLE}${GEAR} ${1}${NC}"
+    echo -e "${PURPLE}${GEAR} ================================${NC}\n"
+}
+
+# Error handling
+error_exit() {
+    log_error "$1"
+    exit 1
+}
+
+# Check if running on macOS
+check_macos() {
+    if [[ "$OSTYPE" != "darwin"* ]]; then
+        error_exit "This script is designed for macOS only!"
+    fi
+    log_success "Running on macOS"
+}
+
+# Check if we're in the dotfiles directory
+check_dotfiles_dir() {
+    if [[ ! -f "Brewfile" ]] || [[ ! -d "nvim" ]] || [[ ! -d "tmux" ]]; then
+        error_exit "Please run this script from the ~/.dotfilesmacos directory"
+    fi
+    log_success "Found dotfiles directory"
+}
+
+# Install Xcode Command Line Tools
+install_xcode_tools() {
+    log_header "Installing Xcode Command Line Tools"
+    
+    if xcode-select -p &>/dev/null; then
+        log_success "Xcode Command Line Tools already installed"
+    else
+        log_info "Installing Xcode Command Line Tools..."
+        xcode-select --install
+        
+        # Wait for installation to complete
+        log_warning "Please complete the Xcode Command Line Tools installation in the popup, then press ENTER to continue..."
+        read -r
+        
+        if xcode-select -p &>/dev/null; then
+            log_success "Xcode Command Line Tools installed successfully"
+        else
+            error_exit "Failed to install Xcode Command Line Tools"
+        fi
+    fi
+}
+
+# Install Homebrew
+install_homebrew() {
+    log_header "Installing Homebrew"
+    
+    if command -v brew &>/dev/null; then
+        log_success "Homebrew already installed"
+        log_info "Updating Homebrew..."
+        brew update
+    else
+        log_info "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+        # Add Homebrew to PATH
+        if [[ -f "/opt/homebrew/bin/brew" ]]; then
+            echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        elif [[ -f "/usr/local/bin/brew" ]]; then
+            echo 'eval "$(/usr/local/bin/brew shellenv)"' >> ~/.zprofile
+            eval "$(/usr/local/bin/brew shellenv)"
+        fi
+        
+        log_success "Homebrew installed successfully"
+    fi
+}
+
+# Install packages from Brewfile
+install_packages() {
+    log_header "Installing Packages from Brewfile"
+    
+    if [[ -f "Brewfile" ]]; then
+        log_info "Installing packages, casks, and VS Code extensions..."
+        brew bundle --verbose
+        log_success "All packages installed successfully"
+    else
+        error_exit "Brewfile not found!"
+    fi
+}
+
+# Install Oh My Zsh
+install_oh_my_zsh() {
+    log_header "Installing Oh My Zsh"
+    
+    if [[ -d "$HOME/.oh-my-zsh" ]]; then
+        log_success "Oh My Zsh already installed"
+    else
+        log_info "Installing Oh My Zsh..."
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        log_success "Oh My Zsh installed successfully"
+    fi
+}
+
+# Install custom zsh syntax highlighting (gradient)
+install_zsh_gradient_highlighting() {
+    log_header "Installing Zsh Gradient Syntax Highlighting"
+    
+    local gradient_dir="$HOME/personal/projects/zsh-syntax-highlighting-gradient"
+    
+    if [[ -d "$gradient_dir" ]]; then
+        log_success "Zsh gradient syntax highlighting already installed"
+    else
+        log_info "Creating directory structure..."
+        mkdir -p "$HOME/personal/projects"
+        
+        log_info "Cloning zsh-syntax-highlighting-gradient..."
+        git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$gradient_dir"
+        log_success "Zsh gradient syntax highlighting installed"
+    fi
+}
+
+# Install Tmux Plugin Manager
+install_tmux_plugin_manager() {
+    log_header "Installing Tmux Plugin Manager"
+    
+    local tpm_dir="$HOME/.tmux/plugins/tpm"
+    
+    if [[ -d "$tpm_dir" ]]; then
+        log_success "Tmux Plugin Manager already installed"
+    else
+        log_info "Installing Tmux Plugin Manager..."
+        git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+        log_success "Tmux Plugin Manager installed"
+        log_warning "Remember to install tmux plugins with: prefix + I (default: Ctrl-b + I)"
+    fi
+}
+
+# Install Neovim Packer
+install_packer() {
+    log_header "Installing Neovim Packer Plugin Manager"
+    
+    local packer_dir="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/site/pack/packer/start/packer.nvim"
+    
+    if [[ -d "$packer_dir" ]]; then
+        log_success "Packer already installed"
+    else
+        log_info "Installing Packer..."
+        git clone --depth 1 https://github.com/wbthomason/packer.nvim "$packer_dir"
+        log_success "Packer installed successfully"
+        log_warning "Remember to run :PackerSync in Neovim to install plugins"
+    fi
+}
+
+# Create necessary directories
+create_directories() {
+    log_header "Creating Necessary Directories"
+    
+    local dirs=(
+        "$HOME/.config"
+        "$HOME/.local/bin"
+        "$HOME/bin"
+        "$HOME/personal/projects"
+    )
+    
+    for dir in "${dirs[@]}"; do
+        if [[ ! -d "$dir" ]]; then
+            log_info "Creating directory: $dir"
+            mkdir -p "$dir"
+        fi
+    done
+    
+    log_success "All directories created"
+}
+
+# Setup tmux-sessionizer configuration
+setup_tmux_sessionizer() {
+    log_header "Setting up Tmux Sessionizer"
+    
+    local config_dir="$HOME/.config/tmux-sessionizer"
+    local directories_file="$config_dir/directories"
+    
+    mkdir -p "$config_dir"
+    
+    if [[ ! -f "$directories_file" ]]; then
+        log_info "Creating tmux-sessionizer directories file..."
+        cat > "$directories_file" << EOF
+# Add your project directories here (one per line)
+# Example:
+# $HOME/personal/projects
+# $HOME/work
+# $HOME/dotfiles
+$HOME/personal/projects
+$HOME
+EOF
+        log_success "Tmux-sessionizer configuration created"
+        log_warning "Edit ~/.config/tmux-sessionizer/directories to add your project paths"
+    else
+        log_success "Tmux-sessionizer configuration already exists"
+    fi
+}
+
+# Stow dotfiles
+stow_dotfiles() {
+    log_header "Creating Symlinks with Stow"
+    
+    # List of directories to stow
+    local stow_dirs=(
+        "zsh"
+        "tmux"
+        "nvim"
+        "git"
+        "alacritty"
+        "kitty"
+        "ghostty"
+        "bat"
+        "bpytop"
+        "lsd"
+        "wm"
+        "zen"
+    )
+    
+    for dir in "${stow_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            log_info "Stowing $dir..."
+            stow -v "$dir"
+            log_success "$dir stowed successfully"
+        else
+            log_warning "Directory $dir not found, skipping..."
+        fi
+    done
+    
+    # Handle scripts separately (they go to ~/.local/bin)
+    if [[ -d "scripts" ]]; then
+        log_info "Setting up scripts..."
+        
+        # Copy scripts to ~/.local/bin and make them executable
+        if [[ -d "scripts/bin" ]]; then
+            cp -r scripts/bin/* "$HOME/.local/bin/"
+            chmod +x "$HOME/.local/bin/"*
+            log_success "Scripts installed to ~/.local/bin"
+        fi
+    fi
+}
+
+# Set up environment variables and PATH
+setup_environment() {
+    log_header "Setting up Environment Variables"
+    
+    # Ensure XDG_CONFIG_HOME is set
+    if ! grep -q "XDG_CONFIG_HOME" "$HOME/.zshrc" 2>/dev/null; then
+        echo 'export XDG_CONFIG_HOME="$HOME/.config"' >> "$HOME/.zshrc"
+        log_success "XDG_CONFIG_HOME added to .zshrc"
+    fi
+    
+    # Ensure ~/.local/bin is in PATH
+    if ! grep -q "\$HOME/.local/bin" "$HOME/.zshrc" 2>/dev/null; then
+        echo 'export PATH="$HOME/.local/bin:$PATH"' >> "$HOME/.zshrc"
+        log_success "~/.local/bin added to PATH"
+    fi
+    
+    # Ensure ~/bin is in PATH  
+    if ! grep -q "\$HOME/bin" "$HOME/.zshrc" 2>/dev/null; then
+        echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.zshrc"
+        log_success "~/bin added to PATH"
+    fi
+}
+
+# Configure macOS defaults
+configure_macos() {
+    log_header "Configuring macOS Defaults"
+    
+    log_info "Setting up macOS defaults..."
+    
+    # Dock settings
+    defaults write com.apple.dock autohide -bool true
+    defaults write com.apple.dock autohide-time-modifier -float 0.5
+    defaults write com.apple.dock autohide-delay -float 0
+    
+    # Finder settings
+    defaults write com.apple.finder AppleShowAllFiles -bool true
+    defaults write com.apple.finder ShowPathbar -bool true
+    defaults write com.apple.finder ShowStatusBar -bool true
+    
+    # Disable press-and-hold for keys in favor of key repeat
+    defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
+    
+    # Set fast key repeat rate
+    defaults write NSGlobalDomain KeyRepeat -int 2
+    defaults write NSGlobalDomain InitialKeyRepeat -int 15
+    
+    # Restart affected applications
+    killall Dock
+    killall Finder
+    
+    log_success "macOS defaults configured"
+}
+
+# Change default shell to zsh
+change_shell() {
+    log_header "Setting Default Shell"
+    
+    if [[ "$SHELL" == */zsh ]]; then
+        log_success "Default shell is already zsh"
+    else
+        log_info "Changing default shell to zsh..."
+        chsh -s /bin/zsh
+        log_success "Default shell changed to zsh"
+        log_warning "Please restart your terminal session"
+    fi
+}
+
+# Final setup instructions
+final_instructions() {
+    log_header "Setup Complete!"
+    
+    echo -e "${GREEN}${ROCKET} Your development environment is now set up!${NC}\n"
+    
+    echo -e "${CYAN}Next steps:${NC}"
+    echo -e "1. ${YELLOW}Restart your terminal${NC}"
+    echo -e "2. ${YELLOW}Open Neovim and run :PackerSync to install plugins${NC}"
+    echo -e "3. ${YELLOW}In tmux, press Ctrl-b + I to install tmux plugins${NC}"
+    echo -e "4. ${YELLOW}Edit ~/.config/tmux-sessionizer/directories to add your project paths${NC}"
+    echo -e "5. ${YELLOW}For yabai/skhd: Run 'brew services start yabai' and 'brew services start skhd'${NC}"
+    
+    echo -e "\n${CYAN}Key bindings:${NC}"
+    echo -e "• ${YELLOW}Ctrl-f${NC}: Open tmux-sessionizer"
+    echo -e "• ${YELLOW}Alt-hjkl${NC}: Navigate windows (yabai)"
+    echo -e "• ${YELLOW}Alt-2${NC}: Toggle Ghostty"
+    echo -e "• ${YELLOW}Alt-3${NC}: Toggle WhatsApp"
+    
+    echo -e "\n${GREEN}${SUCCESS} Enjoy your new development environment!${NC}"
+}
+
+# Main execution
+main() {
+    log_header "🚀 DOTFILES SETUP STARTING"
+    
+    check_macos
+    check_dotfiles_dir
+    install_xcode_tools
+    install_homebrew
+    install_packages
+    install_oh_my_zsh
+    install_zsh_gradient_highlighting
+    create_directories
+    install_tmux_plugin_manager
+    install_packer
+    setup_tmux_sessionizer
+    stow_dotfiles
+    setup_environment
+    configure_macos
+    change_shell
+    final_instructions
+}
+
+# Run the main function
+main "$@"
+
+
