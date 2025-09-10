@@ -1,0 +1,3 @@
+[submodule "mlemfetch"]
+	path = mlemfetch
+	url = https://github.com/ml3m/mlemfetch.git
