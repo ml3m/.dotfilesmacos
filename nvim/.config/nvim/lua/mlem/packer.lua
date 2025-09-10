@@ -84,4 +84,6 @@ return require('packer').startup(function(use)
     end
     }
 
+    use 'gustafj/vim-ttcn'
+
 end)

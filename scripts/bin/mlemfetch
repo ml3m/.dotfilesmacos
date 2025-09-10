@@ -1,6 +1,12 @@
 #!/bin/bash
 
-# Colors array
+# Color mode configuration: "random" or "gradient"
+default_color="random"
+
+# Gradient palette selection: "sunset", "ocean", "forest", "neon"
+gradient_theme="neon"
+
+# Colors array for random mode
 colors=(
   '\033[31m' # Red
   '\033[32m' # Green
@@ -17,6 +23,27 @@ colors=(
 )
 NC='\033[0m' # No Color
 WHITE='\033[97m' # White
+
+# Gradient palette themes - aesthetically pleasing color combinations
+gradient_palette_sunset=(224 216 208 172 136 94 52)     # Warm sunset: peach → orange → deep orange → brown
+gradient_palette_ocean=(159 123 87 51 45 39 33)         # Ocean depths: light blue → teal → deep blue → navy
+gradient_palette_forest=(154 148 142 106 70 64 22)      # Forest vibes: light green → yellow-green → dark green
+gradient_palette_neon=(201 165 129 93 57 21 196)        # Neon cyberpunk: pink → purple → blue → cyan → red
+
+# Set active gradient palette based on theme
+case $gradient_theme in
+  "sunset")  gradient_palette=("${gradient_palette_sunset[@]}") ;;
+  "ocean")   gradient_palette=("${gradient_palette_ocean[@]}") ;;
+  "forest")  gradient_palette=("${gradient_palette_forest[@]}") ;;
+  "neon")    gradient_palette=("${gradient_palette_neon[@]}") ;;
+  *)         gradient_palette=("${gradient_palette_sunset[@]}") ;;  # Default to sunset
+esac
+gradient_base_hue=260
+gradient_pastel_sat=0.35
+gradient_pastel_light=0.85
+gradient_base_span_deg=20
+gradient_per_char_span_deg=6
+gradient_max_span_deg=300
 
 # Padding settings
 LEFT_PADDING=4 # Number of spaces for left padding
@@ -187,6 +214,53 @@ get_disk() {
   df -h / | awk 'NR==2 {print $2}' | sed 's/GiB/GB/g'
 }
 
+# Simplified gradient function using palette mode
+# This avoids complex HSL calculations and uses the predefined color palette
+
+gradient_color_for_index() {
+  local i=$1 len=$2
+  
+  # Use palette mode with the configured colors
+  local stops=${#gradient_palette[@]}
+  if (( stops <= 1 || len <= 1 )); then
+    echo "${gradient_palette[0]:-196}"
+    return
+  fi
+  
+  local numerator=$(( i * (stops - 1) ))
+  local denominator=$(( len - 1 ))
+  local idx=$(( numerator / denominator ))
+  [[ $idx -lt 0 ]] && idx=0
+  [[ $idx -ge $stops ]] && idx=$((stops - 1))
+  
+  echo "${gradient_palette[$idx]}"
+}
+
+# Moving gradient function with smooth interpolation
+gradient_color_for_index_moving() {
+  local pos=$1
+  
+  local stops=${#gradient_palette[@]}
+  if (( stops <= 1 )); then
+    echo "${gradient_palette[0]:-196}"
+    return
+  fi
+  
+  # Create a much larger virtual palette by expanding each color multiple times
+  local expansion_factor=20  # Each color appears 20 times for smoother transitions
+  local total_virtual_colors=$((stops * expansion_factor))
+  
+  # Map position to virtual palette with cycling
+  local virtual_pos=$((pos % total_virtual_colors))
+  [[ $virtual_pos -lt 0 ]] && virtual_pos=$((total_virtual_colors + virtual_pos))
+  
+  # Find which actual color this virtual position maps to
+  local actual_idx=$((virtual_pos / expansion_factor))
+  [[ $actual_idx -ge $stops ]] && actual_idx=$((stops - 1))
+  
+  echo "${gradient_palette[$actual_idx]}"
+}
+
 # Function to colorize a string randomly
 # Function to colorize a string randomly
 colorize_string() {
@@ -233,6 +307,81 @@ colorize_string() {
     done
     
     echo -e "$result"
+}
+
+# Function to colorize a string with moving diagonal gradient
+colorize_string_gradient() {
+    local string="$1"
+    local line_index="$2"  # Which line this is in the overall ASCII art
+    local total_lines="$3" # Total lines in the ASCII art
+    local animation_offset="$4" # Animation frame offset for movement
+    local result=""
+    local -i len=${#string}
+    local skip_next=0
+    
+    # Gradient spacing factor - very small for smooth transitions
+    local spacing_factor=1
+    
+    for ((i = 0; i < len; i++)); do
+        # Skip this iteration if we're in the middle of an escape sequence
+        if ((skip_next > 0)); then
+            skip_next=$((skip_next - 1))
+            continue
+        fi
+        
+        local char="${string:$i:1}"
+        
+        # Handle backslash escapes
+        if [[ "$char" == "\\" ]]; then
+            # Peek at next character
+            if ((i + 1 < len)); then
+                next_char="${string:$i+1:1}"
+                # Calculate moving diagonal gradient position
+                local diagonal_pos=$(((line_index + i + animation_offset) / spacing_factor))
+                local color_code=$(gradient_color_for_index_moving $diagonal_pos)
+                local color_escape="\033[38;5;${color_code}m"
+                # Keep backslash and next character together
+                result+="${color_escape}\\${next_char}${NC}"
+                skip_next=1
+                continue
+            fi
+        fi
+        
+        # Handle single quotes
+        if [[ "$char" == "'" ]]; then
+            # Peek at surrounding characters for escape sequence
+            if ((i > 0)) && [[ "${string:$i-1:1}" == "\\" ]]; then
+                continue  # Skip this quote as it's part of an escape sequence
+            fi
+        fi
+        
+        # Regular character coloring
+        if [[ "$char" != " " ]]; then
+            # Calculate moving diagonal gradient position with spacing
+            local diagonal_pos=$(((line_index + i + animation_offset) / spacing_factor))
+            local color_code=$(gradient_color_for_index_moving $diagonal_pos)
+            local color_escape="\033[38;5;${color_code}m"
+            result+="${color_escape}${char}${NC}"
+        else
+            result+="$char"
+        fi
+    done
+    
+    echo -e "$result"
+}
+
+# Main colorize function that chooses between random and gradient modes
+colorize_string_main() {
+    local string="$1"
+    local line_index="$2"
+    local total_lines="$3"
+    local animation_offset="$4"
+    
+    if [[ "$default_color" == "gradient" ]]; then
+        colorize_string_gradient "$string" "$line_index" "$total_lines" "$animation_offset"
+    else
+        colorize_string "$string"
+    fi
 }
 
 # Function to get the visual length of a string (excluding color codes)
@@ -463,6 +612,9 @@ restore_cursor_position() {
 update_colors() {
     local frame_count=${#frames[@]}
     local current_frame=0
+    local color_update_counter=0
+    local color_updates_per_frame=5  # Change colors 5 times per frame change
+    local gradient_animation_offset=0  # Track gradient movement
     
     # Safety check to avoid division by zero
     if [ "$frame_count" -eq 0 ]; then
@@ -480,8 +632,8 @@ update_colors() {
         eval "current_frame_array=(\"\${${frame_name}[@]}\")"
         
         for i in "${!current_frame_array[@]}"; do
-            # Create colored version of the frame line
-            colored_logo=$(colorize_string "${current_frame_array[$i]}")
+            # Create colored version of the frame line using main colorize function with animation offset
+            colored_logo=$(colorize_string_main "${current_frame_array[$i]}" "$i" "${#current_frame_array[@]}" "$gradient_animation_offset")
             
             # Add line clearing and content
             frame_output+="\r\033[K"
@@ -508,16 +660,37 @@ update_colors() {
         # Restore cursor position
         restore_cursor_position
         
+        # Increment color update counter and gradient animation offset
+        color_update_counter=$((color_update_counter + 1))
+        gradient_animation_offset=$((gradient_animation_offset + 3))  # Smooth movement speed
         
-        # Wait 300ms for frame animation
-        if [[ $current_frame -eq 2 || $current_frame -eq 3 || $current_frame -eq 4 || $current_frame -eq 5 || $current_frame -eq 6 || $current_frame -eq 7 ]]; then
-          sleep 0.1
+        # Define frame delays
+        local frame_delay
+        if [[ $current_frame -ge 2 ]]; then
+          frame_delay=0.10  # Bug eating animation (frames 2 to end)
         else
-          sleep "$delay"
+          frame_delay="$delay"  # Breathing animation (frames 0-1) use delay variable (0.30)
         fi
+        
+        # Color update sleep (much faster than frame changes)
+        local color_sleep=0.12  # Base color update speed (increased from 0.06 for slower color changes)
+        sleep "$color_sleep"
 
-        # Move to next frame
-        current_frame=$(( (current_frame + 1) % frame_count ))
+        # Calculate required updates based on frame delay
+        # required_updates = frame_delay / color_sleep
+        local required_updates
+        if [[ $current_frame -ge 2 ]]; then
+            # For bug eating: 0.10 / 0.12 ≈ 0.83, round to 1
+            required_updates=1
+        else
+            # For breathing: 0.30 / 0.12 = 2.5, round to 3
+            required_updates=3
+        fi
+        
+        if [ $color_update_counter -ge $required_updates ]; then
+            current_frame=$(( (current_frame + 1) % frame_count ))
+            color_update_counter=0
+        fi
     done
 }
 
@@ -579,7 +752,7 @@ total_logo_width=$((max_logo_length + padding))
 # Create a temporary array to reference the first frame
 eval "initial_frame=(\"\${frame_0[@]}\")"
 for i in "${!initial_frame[@]}"; do
-    colored_logo=$(colorize_string "${initial_frame[$i]}")
+    colored_logo=$(colorize_string_main "${initial_frame[$i]}" "$i" "${#initial_frame[@]}" "0")
     
     if [ $i -ge $start_line ] && [ $((i - start_line)) -lt ${#sys_info[@]} ]; then
         visual_length=$(get_visual_length "${initial_frame[$i]}")
